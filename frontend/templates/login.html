@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход - ИПР</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css?v=16">
+</head>
+<body>
+    <div class="login-container">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card login-card shadow-lg">
+                        <div class="card-body p-5">
+                            <h2 class="text-center mb-4">Вход в систему ИПР</h2>
+                            <p class="text-center text-muted mb-4">Индивидуальные планы развития</p>
+                            
+                            <!-- Переключатель роли -->
+                            <ul class="nav nav-pills nav-fill mb-4" id="loginTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="mentor-tab" data-bs-toggle="pill" 
+                                            data-bs-target="#mentor" type="button" role="tab">
+                                        Ментор
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="mentee-tab" data-bs-toggle="pill" 
+                                            data-bs-target="#mentee" type="button" role="tab">
+                                        Менти
+                                    </button>
+                                </li>
+                            </ul>
+
+                            <div class="tab-content" id="loginTabContent">
+                                <!-- Вход для ментора -->
+                                <div class="tab-pane fade show active" id="mentor" role="tabpanel">
+                                    <form id="mentorLoginForm">
+                                        <div class="mb-3">
+                                            <label for="mentorEmail" class="form-label">Email</label>
+                                            <input type="email" class="form-control" id="mentorEmail" 
+                                                   placeholder="mentor@example.com" required>
+                                        </div>
+                                        <div class="mb-4">
+                                            <label for="mentorPassword" class="form-label">Пароль</label>
+                                            <input type="password" class="form-control" id="mentorPassword" 
+                                                   placeholder="••••••••" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary w-100 mb-3">
+                                            Войти как ментор
+                                        </button>
+                                        <div class="text-center">
+                                            <small class="text-muted">Нет аккаунта?</small>
+                                            <button type="button" class="btn btn-link p-0" 
+                                                    data-bs-toggle="modal" data-bs-target="#registerModal">
+                                                Зарегистрироваться
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <!-- Вход для менти -->
+                                <div class="tab-pane fade" id="mentee" role="tabpanel">
+                                    <form id="menteeLoginForm">
+                                        <div class="mb-4">
+                                            <label for="accessCode" class="form-label">Код доступа</label>
+                                            <input type="text" class="form-control" id="accessCode" 
+                                                   placeholder="idp-XXXXX" required>
+                                            <small class="text-muted">
+                                                Введите код доступа, полученный от вашего ментора
+                                            </small>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary w-100">
+                                            Войти как менти
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно регистрации -->
+    <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="registerModalLabel">Регистрация ментора</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="registerForm">
+                        <div class="mb-3">
+                            <label for="regFullName" class="form-label">Фамилия и имя *</label>
+                            <input type="text" class="form-control" id="regFullName" 
+                                   placeholder="Иванов Иван" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="regEmail" class="form-label">Email *</label>
+                            <input type="email" class="form-control" id="regEmail" 
+                                   placeholder="mentor@example.com" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="regPassword" class="form-label">Пароль *</label>
+                            <input type="password" class="form-control" id="regPassword" 
+                                   placeholder="••••••••" required>
+                            <small class="text-muted">Минимум 6 символов</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="regPosition" class="form-label">Должность</label>
+                            <input type="text" class="form-control" id="regPosition" 
+                                   placeholder="Lead QA Engineer">
+                        </div>
+                        <div class="mb-3">
+                            <label for="regGrade" class="form-label">Грейд</label>
+                            <input type="text" class="form-control" id="regGrade" 
+                                   placeholder="Senior">
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                Зарегистрироваться
+                            </button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                Отмена
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/app.js?v=29"></script>
+    <script>
+        // Вход ментора
+        document.getElementById('mentorLoginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Очистка предыдущих ошибок
+            clearAllErrors('mentorLoginForm');
+            
+            const email = document.getElementById('mentorEmail').value.trim();
+            const password = document.getElementById('mentorPassword').value;
+            
+            let hasErrors = false;
+            
+            // Валидация email
+            if (!validateRequired(email)) {
+                showFieldError('mentorEmail', 'Email обязателен');
+                hasErrors = true;
+            } else if (!validateEmail(email)) {
+                showFieldError('mentorEmail', 'Введите корректный email');
+                hasErrors = true;
+            } else {
+                showFieldSuccess('mentorEmail');
+            }
+            
+            // Валидация пароля
+            if (!validateRequired(password)) {
+                showFieldError('mentorPassword', 'Пароль обязателен');
+                hasErrors = true;
+            } else {
+                showFieldSuccess('mentorPassword');
+            }
+            
+            if (hasErrors) return;
+            
+            try {
+                const response = await apiRequest('/auth/login', {
+                    method: 'POST',
+                    body: JSON.stringify({ email, password }),
+                    skipAuthRedirect: true  // Не редиректим при 401 на странице входа
+                });
+                
+                saveToken(response.access_token);
+                currentUser = response.user;
+                // Сохраняем пользователя в localStorage
+                localStorage.setItem('currentUser', JSON.stringify(response.user));
+                window.location.href = '/dashboard';
+            } catch (error) {
+                console.error('[LOGIN] Ошибка входа ментора:', error);
+                // Показываем ошибку на полях при неверных учетных данных
+                showFieldError('mentorEmail', 'Неверный email или пароль');
+                showFieldError('mentorPassword', 'Неверный email или пароль');
+                showError(error);
+            }
+        });
+
+        // Вход менти
+        document.getElementById('menteeLoginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Очистка предыдущих ошибок
+            clearAllErrors('menteeLoginForm');
+            
+            const access_code = document.getElementById('accessCode').value.trim();
+            
+            // Валидация кода доступа
+            if (!validateRequired(access_code)) {
+                showFieldError('accessCode', 'Код доступа обязателен');
+                return;
+            }
+            
+            showFieldSuccess('accessCode');
+            
+            try {
+                const response = await apiRequest('/auth/login', {
+                    method: 'POST',
+                    body: JSON.stringify({ access_code }),
+                    skipAuthRedirect: true  // Не редиректим при 401 на странице входа
+                });
+                
+                saveToken(response.access_token);
+                currentUser = response.user;
+                // Сохраняем пользователя в localStorage
+                localStorage.setItem('currentUser', JSON.stringify(response.user));
+                window.location.href = '/dashboard';
+            } catch (error) {
+                console.error('[LOGIN] Ошибка входа менти:', error);
+                showFieldError('accessCode', 'Неверный код доступа');
+                showError(error);
+            }
+        });
+
+        // Регистрация ментора
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Очистка предыдущих ошибок
+            clearAllErrors('registerForm');
+            
+            const fullName = document.getElementById('regFullName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const position = document.getElementById('regPosition').value.trim();
+            const grade = document.getElementById('regGrade').value.trim();
+            
+            let hasErrors = false;
+            
+            if (!validateRequired(fullName)) {
+                showFieldError('regFullName', 'Фамилия и имя обязательны');
+                hasErrors = true;
+            } else if (!validateFullName(fullName)) {
+                showFieldError('regFullName', 'Введите фамилию и имя');
+                hasErrors = true;
+            } else {
+                showFieldSuccess('regFullName');
+            }
+            
+            // Валидация email
+            if (!validateRequired(email)) {
+                showFieldError('regEmail', 'Email обязателен');
+                hasErrors = true;
+            } else if (!validateEmail(email)) {
+                showFieldError('regEmail', 'Введите корректный email');
+                hasErrors = true;
+            } else {
+                showFieldSuccess('regEmail');
+            }
+            
+            // Валидация пароля
+            if (!validateRequired(password)) {
+                showFieldError('regPassword', 'Пароль обязателен');
+                hasErrors = true;
+            } else if (!validatePassword(password)) {
+                showFieldError('regPassword', 'Минимум 6 символов');
+                hasErrors = true;
+            } else {
+                showFieldSuccess('regPassword');
+            }
+            
+            // Должность и грейд опциональны - только подтверждение при заполнении
+            if (position) {
+                showFieldSuccess('regPosition');
+            }
+            if (grade) {
+                showFieldSuccess('regGrade');
+            }
+            
+            if (hasErrors) return;
+            
+            try {
+                // Регистрация
+                const response = await apiRequest('/auth/register', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        full_name: fullName,
+                        email: email,
+                        password: password,
+                        position: position || null,
+                        grade: grade || null
+                    }),
+                    skipAuthRedirect: true  // Не редиректим при ошибке на странице входа
+                });
+                
+                // Закрываем модальное окно
+                const modal = bootstrap.Modal.getInstance(document.getElementById('registerModal'));
+                modal.hide();
+                
+                // Показываем успешное сообщение
+                showSuccess('Регистрация успешна! Теперь вы можете войти в систему.');
+                
+                // Очищаем форму
+                document.getElementById('registerForm').reset();
+                clearAllErrors('registerForm');
+                
+                // Заполняем email в форме входа
+                document.getElementById('mentorEmail').value = email;
+                document.getElementById('mentorPassword').focus();
+            } catch (error) {
+                // Проверяем, не ошибка ли дублирования email
+                if (error.message && error.message.includes('уже существует')) {
+                    showFieldError('regEmail', 'Этот email уже зарегистрирован');
+                }
+                showError(error);
+            }
+        });
+
+        // Добавляем автоочистку ошибок при вводе
+        addInputValidationListeners('mentorLoginForm');
+        addInputValidationListeners('menteeLoginForm');
+        addInputValidationListeners('registerForm');
+        
+        // Если уже авторизован, перенаправить
+        if (getToken()) {
+            window.location.href = '/dashboard';
+        }
+    </script>
+</body>
+</html>
+
+

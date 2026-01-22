@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Дашборд - ИПР</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css?v=16">
+</head>
+<body>
+    <!-- Навигация -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <span class="navbar-brand">💫 Сегодня выполнена еще одна крутая задача</span>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/dashboard">Дашборд</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/profile">Профиль</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="logout()">Выход</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Заголовок -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 id="pageTitle">Мои ИПР</h1>
+                <p class="text-muted" id="userInfo">Загрузка...</p>
+            </div>
+            <button class="btn btn-primary" id="createIdpBtn" style="display: none;">
+                + Создать ИПР
+            </button>
+        </div>
+
+        <!-- Список ИПР -->
+        <div id="idpList" class="row">
+            <div class="col-12 text-center py-5">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Загрузка...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/app.js?v=29"></script>
+    <script>
+        console.log('[DASHBOARD] Script started');
+        console.log('[DASHBOARD] Checking app.js functions...');
+        console.log('[DASHBOARD] apiRequest:', typeof apiRequest);
+        console.log('[DASHBOARD] checkAuth:', typeof checkAuth);
+        console.log('[DASHBOARD] getToken:', typeof getToken);
+        console.log('[DASHBOARD] currentUser:', typeof currentUser);
+        
+        // currentUser уже объявлена в app.js
+
+        async function loadDashboard() {
+            console.log('[DEBUG] loadDashboard started');
+            
+            if (!await checkAuth()) {
+                console.log('[DEBUG] checkAuth failed');
+                return;
+            }
+            
+            console.log('[DEBUG] checkAuth passed');
+
+            try {
+                console.log('[DEBUG] Requesting /api/idps/...');
+                
+                // Загрузка ИПР с таймаутом
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 секунд таймаут
+                
+                const idps = await apiRequest('/idps/', { signal: controller.signal });
+                clearTimeout(timeoutId);
+                
+                console.log('[DEBUG] Got IDPs:', idps);
+                
+                // Определяем роль пользователя
+                let isMentor = false;
+                
+                if (idps.length > 0) {
+                    const firstIdp = idps[0];
+                    // Проверяем роль через сохраненного пользователя
+                    const userStr = localStorage.getItem('currentUser');
+                    if (userStr) {
+                        currentUser = JSON.parse(userStr);
+                        isMentor = currentUser.role === 'mentor';
+                    } else {
+                        // Fallback: определяем по ИПР
+                        isMentor = firstIdp.mentor_id === firstIdp.mentor.id;
+                        currentUser = isMentor ? firstIdp.mentor : firstIdp.mentee;
+                    }
+                    
+                    document.getElementById('userInfo').textContent = 
+                        `${currentUser.full_name} (${isMentor ? 'Ментор' : 'Менти'})`;
+                    
+                    // Изменяем заголовок в зависимости от роли
+                    document.getElementById('pageTitle').textContent = 
+                        isMentor ? 'Созданные ИПР' : 'Мой ИПР';
+                    
+                    // Показать кнопку создания ИПР для ментора
+                    if (isMentor) {
+                        document.getElementById('createIdpBtn').style.display = 'block';
+                        // Отображение списка ИПР для ментора
+                        displayIDPs(idps);
+                    } else {
+                        // Для менти - перенаправляем на канбан его ИПР
+                        console.log('[DEBUG] User is mentee, redirecting to kanban');
+                        window.location.href = `/kanban/${firstIdp.id}`;
+                    }
+                } else {
+                    // Если нет ИПР, получаем инфо о пользователе из localStorage
+                    const userStr = localStorage.getItem('currentUser');
+                    if (userStr) {
+                        currentUser = JSON.parse(userStr);
+                        isMentor = currentUser.role === 'mentor';
+                        
+                        document.getElementById('userInfo').textContent = 
+                            `${currentUser.full_name} (${isMentor ? 'Ментор' : 'Менти'})`;
+                        
+                        // Изменяем заголовок в зависимости от роли
+                        document.getElementById('pageTitle').textContent = 
+                            isMentor ? 'Созданные ИПР' : 'Мой ИПР';
+                        
+                        // Показать кнопку создания ИПР для ментора
+                        if (isMentor) {
+                            document.getElementById('createIdpBtn').style.display = 'block';
+                        }
+                        
+                        // Показываем пустой список
+                        displayIDPs([]);
+                    } else {
+                        document.getElementById('userInfo').textContent = 'Загрузка...';
+                        displayIDPs([]);
+                    }
+                }
+            } catch (error) {
+                console.error('[ERROR] loadDashboard failed:', error);
+                
+                // Показываем ошибку пользователю
+                document.getElementById('idpList').innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <div class="alert alert-danger">
+                            <h5>Ошибка загрузки</h5>
+                            <p>${error.message || 'Не удалось загрузить данные'}</p>
+                            <button class="btn btn-primary" onclick="location.reload()">Обновить</button>
+                        </div>
+                    </div>
+                `;
+                
+                showError(error);
+            }
+        }
+
+        function displayIDPs(idps) {
+            const container = document.getElementById('idpList');
+            
+            if (idps.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <p class="text-muted">У вас пока нет ИПР</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = idps.map(idp => `
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">${idp.mentee.full_name}</h5>
+                            <p class="text-muted mb-2">
+                                <small>Ментор: ${idp.mentor.full_name}</small>
+                            </p>
+                            <p class="text-muted mb-3">
+                                <small>Создан: ${formatDate(idp.created_at)}</small>
+                            </p>
+                            <div class="mb-3">
+                                <span class="badge bg-${idp.status === 'active' ? 'success' : 'secondary'}">
+                                    ${idp.status === 'active' ? 'Активен' : 'Завершен'}
+                                </span>
+                                <span class="badge bg-info">
+                                    ${idp.tasks.length} задач
+                                </span>
+                            </div>
+                            <a href="/kanban/${idp.id}" class="btn btn-primary btn-sm w-100">
+                                Открыть доску
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Создание ИПР (безопасно)
+        const createBtn = document.getElementById('createIdpBtn');
+        if (createBtn) {
+            createBtn.addEventListener('click', () => {
+                window.location.href = '/create-idp';
+            });
+        }
+
+        // Загрузка при открытии
+        console.log('[DASHBOARD] Starting initialization...');
+        console.log('[DASHBOARD] Token:', localStorage.getItem('authToken') ? 'EXISTS' : 'NO TOKEN');
+        console.log('[DASHBOARD] User:', localStorage.getItem('currentUser') ? 'EXISTS' : 'NO USER');
+        
+        // Убедимся что DOM готов
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                console.log('[DASHBOARD] DOM Ready - calling loadDashboard');
+                loadDashboard();
+            });
+        } else {
+            console.log('[DASHBOARD] DOM Already Ready - calling loadDashboard');
+            loadDashboard();
+        }
+    </script>
+</body>
+</html>
+
+

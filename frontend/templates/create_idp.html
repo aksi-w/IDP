@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Создать ИПР - ИПР</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css?v=16">
+    <style>
+        .template-card {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .template-card:hover {
+            background-color: #f8f9fa;
+            border-color: #0d6efd;
+        }
+        .template-card.selected {
+            background-color: #e7f1ff;
+            border-color: #0d6efd;
+            border-width: 2px;
+        }
+        .level-badge {
+            font-size: 0.75rem;
+            padding: 3px 8px;
+        }
+        .category-section {
+            margin-bottom: 20px;
+        }
+        .selected-count {
+            background-color: #0d6efd;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 8px;
+            font-size: 0.85rem;
+            margin-left: 8px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Навигация -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <span class="navbar-brand">💫 Сегодня выполнена еще одна крутая задача</span>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">Дашборд</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/profile">Профиль</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="logout()">Выход</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Шаг 1: Информация о менти -->
+        <div class="row" id="step1">
+            <div class="col-md-8 mx-auto">
+                <div class="card">
+                    <div class="card-body p-4">
+                        <h2 class="mb-4">Шаг 1: Информация о сотруднике</h2>
+                        
+                        <form id="menteeInfoForm">
+                            <div class="mb-3">
+                                <label for="menteeName" class="form-label">Фамилия и имя сотрудника (менти) *</label>
+                                <input type="text" class="form-control" id="menteeName" 
+                                       placeholder="Иванов Иван" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="menteeEmail" class="form-label">Email сотрудника *</label>
+                                <input type="email" class="form-control" id="menteeEmail" 
+                                       placeholder="ivanov@example.com" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="menteePosition" class="form-label">Должность</label>
+                                <input type="text" class="form-control" id="menteePosition" 
+                                       placeholder="QA Engineer">
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="menteeGrade" class="form-label">Грейд</label>
+                                <input type="text" class="form-control" id="menteeGrade" 
+                                       placeholder="Middle">
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    Далее: Выбрать задачи
+                                </button>
+                                <a href="/dashboard" class="btn btn-secondary">
+                                    Отмена
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Шаг 2: Выбор задач из шаблонов -->
+        <div class="row d-none" id="step2">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2 class="mb-0">
+                                Шаг 2: Выбор задач для ИПР
+                                <span class="selected-count" id="selectedCount">0</span>
+                            </h2>
+                            <button class="btn btn-link" onclick="showStep1()">
+                                ← Назад
+                            </button>
+                        </div>
+
+                        <!-- Поиск -->
+                        <div class="mb-4">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="searchInput" 
+                                       placeholder="Поиск задач по названию, описанию...">
+                                <button class="btn btn-outline-secondary" onclick="searchTemplates()">
+                                    🔍 Поиск
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Категории (аккордеон) -->
+                        <div class="accordion" id="categoriesAccordion">
+                            <!-- Категории загружаются динамически -->
+                        </div>
+
+                        <!-- Кнопки действий -->
+                        <div class="mt-4 d-flex gap-2">
+                            <button class="btn btn-success" onclick="createIdpWithTasks()">
+                                Создать ИПР (<span id="selectedCount2">0</span> задач)
+                            </button>
+                            <button class="btn btn-outline-primary" onclick="skipTaskSelection()">
+                                Создать без задач
+                            </button>
+                            <button class="btn btn-secondary" onclick="showStep1()">
+                                Назад
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно успешного создания -->
+    <div class="modal fade" id="successModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">ИПР успешно создан!</h5>
+                </div>
+                <div class="modal-body">
+                    <p>ИПР для сотрудника <strong id="createdMenteeName"></strong> создан.</p>
+                    <p id="tasksAddedInfo" class="text-muted"></p>
+                    <div class="alert alert-warning">
+                        <strong>Важно!</strong>
+                        <p class="mb-2">Код доступа для менти:</p>
+                        <h4 class="text-center mb-2">
+                            <code id="accessCode" style="font-size: 1.5rem;"></code>
+                        </h4>
+                        <p class="mb-0">
+                            <small>Передайте этот код сотруднику. Он понадобится для входа в систему.</small>
+                        </p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="goToDashboard()">
+                        Перейти к дашборду
+                    </button>
+                    <button type="button" class="btn btn-success" onclick="goToKanban()">
+                        Открыть канбан доску
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/app.js?v=29"></script>
+    <script>
+        let createdIdpId = null;
+        let selectedTemplates = new Set();
+        let allCategories = [];
+
+        // Проверка доступа ментора
+        async function checkMentorAccess() {
+            if (!await checkAuth()) return;
+
+            try {
+                const idps = await apiRequest('/idps/');
+                if (idps.length > 0) {
+                    const isMentor = idps[0].mentor_id === idps[0].mentor.id;
+                    if (!isMentor) {
+                        showError({ message: 'Только менторы могут создавать ИПР' });
+                        setTimeout(() => {
+                            window.location.href = '/dashboard';
+                        }, 1000);
+                    }
+                }
+            } catch (error) {
+                showError(error);
+            }
+        }
+
+        // Шаг 1: Сохранить информацию о менти и перейти к выбору задач
+        document.getElementById('menteeInfoForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Очистка предыдущих ошибок
+            clearAllErrors('menteeInfoForm');
+            
+            const menteeName = document.getElementById('menteeName').value.trim();
+            const menteeEmail = document.getElementById('menteeEmail').value.trim();
+            
+            let hasErrors = false;
+            
+            // Валидация ФИО (обязательно)
+            if (!validateRequired(menteeName)) {
+                showFieldError('menteeName', 'Фамилия и имя сотрудника обязательны');
+                hasErrors = true;
+            } else if (!validateFullName(menteeName)) {
+                showFieldError('menteeName', 'Введите фамилию и имя');
+                hasErrors = true;
+            } else {
+                showFieldSuccess('menteeName');
+            }
+            
+            if (!validateRequired(menteeEmail)) {
+                showFieldError('menteeEmail', 'Email обязателен');
+                hasErrors = true;
+            } else if (!validateEmail(menteeEmail)) {
+                showFieldError('menteeEmail', 'Введите корректный email');
+                hasErrors = true;
+            } else {
+                showFieldSuccess('menteeEmail');
+            }
+            
+            if (hasErrors) return;
+            
+            showStep2();
+            await loadCategories();
+        });
+
+        function showStep1() {
+            document.getElementById('step1').classList.remove('d-none');
+            document.getElementById('step2').classList.add('d-none');
+        }
+
+        function showStep2() {
+            document.getElementById('step1').classList.add('d-none');
+            document.getElementById('step2').classList.remove('d-none');
+        }
+
+        // Загрузка категорий
+        async function loadCategories() {
+            try {
+                const categories = await apiRequest('/templates/categories');
+                allCategories = categories;
+                renderCategories(categories);
+            } catch (error) {
+                console.error('Ошибка загрузки категорий:', error);
+                showError(error);
+            }
+        }
+
+        // Отрисовка категорий
+        function renderCategories(categories) {
+            const accordion = document.getElementById('categoriesAccordion');
+            accordion.innerHTML = '';
+
+            categories.forEach((cat, index) => {
+                const collapseId = `collapse${index}`;
+                const item = document.createElement('div');
+                item.className = 'accordion-item';
+                item.innerHTML = `
+                    <h2 class="accordion-header">
+                        <button class="accordion-button ${index !== 0 ? 'collapsed' : ''}" type="button" 
+                                data-bs-toggle="collapse" data-bs-target="#${collapseId}">
+                            ${cat.category} <small class="text-muted ms-2">(${cat.count} задач)</small>
+                        </button>
+                    </h2>
+                    <div id="${collapseId}" class="accordion-collapse collapse ${index === 0 ? 'show' : ''}" 
+                         data-bs-parent="#categoriesAccordion">
+                        <div class="accordion-body" id="templates${index}">
+                            <div class="text-center text-muted">Загрузка...</div>
+                        </div>
+                    </div>
+                `;
+                accordion.appendChild(item);
+
+                // Загрузка шаблонов при раскрытии категории
+                document.getElementById(collapseId).addEventListener('shown.bs.collapse', async () => {
+                    await loadTemplatesForCategory(cat.category, `templates${index}`);
+                });
+            });
+
+            // Загружаем первую категорию сразу
+            if (categories.length > 0) {
+                loadTemplatesForCategory(categories[0].category, 'templates0');
+            }
+        }
+
+        // Загрузка шаблонов для категории
+        async function loadTemplatesForCategory(category, containerId) {
+            try {
+                const templates = await apiRequest(`/templates/by-category/${encodeURIComponent(category)}`);
+                const container = document.getElementById(containerId);
+                
+                if (templates.length === 0) {
+                    container.innerHTML = '<p class="text-muted">Нет доступных задач</p>';
+                    return;
+                }
+
+                container.innerHTML = templates.map(t => `
+                    <div class="template-card ${selectedTemplates.has(t.id) ? 'selected' : ''}" 
+                         onclick="toggleTemplate(${t.id})">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">
+                                    ${t.skill_name}
+                                    ${t.level ? `<span class="badge level-badge bg-info">Уровень ${t.level}</span>` : ''}
+                                    <span class="badge bg-secondary level-badge">${t.source === 'kb_tasks' ? 'БЗ' : 'Hard Skills'}</span>
+                                </h6>
+                                <p class="mb-1 text-muted small">${t.goal || 'Нет описания цели'}</p>
+                                ${t.duration_weeks ? `<small class="text-muted">⏱ ${t.duration_weeks} недель</small>` : ''}
+                            </div>
+                            <div>
+                                <input type="checkbox" class="form-check-input" 
+                                       ${selectedTemplates.has(t.id) ? 'checked' : ''} 
+                                       onclick="event.stopPropagation()">
+                            </div>
+                        </div>
+                        ${t.description ? `
+                            <details class="mt-2">
+                                <summary class="small text-primary" style="cursor: pointer;">Подробнее</summary>
+                                <p class="small mt-2 mb-0">${t.description.substring(0, 300)}${t.description.length > 300 ? '...' : ''}</p>
+                            </details>
+                        ` : ''}
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Ошибка загрузки шаблонов:', error);
+                document.getElementById(containerId).innerHTML = '<p class="text-danger">Ошибка загрузки</p>';
+            }
+        }
+
+        // Переключение выбора шаблона
+        function toggleTemplate(templateId) {
+            if (selectedTemplates.has(templateId)) {
+                selectedTemplates.delete(templateId);
+            } else {
+                selectedTemplates.add(templateId);
+            }
+            updateSelectedCount();
+            // Обновляем визуально
+            const card = event.currentTarget;
+            card.classList.toggle('selected');
+            const checkbox = card.querySelector('input[type="checkbox"]');
+            checkbox.checked = selectedTemplates.has(templateId);
+        }
+
+        // Обновление счетчика выбранных
+        function updateSelectedCount() {
+            const count = selectedTemplates.size;
+            document.getElementById('selectedCount').textContent = count;
+            document.getElementById('selectedCount2').textContent = count;
+        }
+
+        // Поиск шаблонов
+        async function searchTemplates() {
+            const query = document.getElementById('searchInput').value;
+            if (!query.trim()) {
+                await loadCategories();
+                return;
+            }
+
+            try {
+                const results = await apiRequest(`/templates/search?q=${encodeURIComponent(query)}`);
+                const accordion = document.getElementById('categoriesAccordion');
+                
+                if (results.length === 0) {
+                    accordion.innerHTML = '<p class="text-center text-muted mt-4">Ничего не найдено</p>';
+                    return;
+                }
+
+                // Группируем результаты по категориям
+                const grouped = results.reduce((acc, t) => {
+                    if (!acc[t.category]) acc[t.category] = [];
+                    acc[t.category].push(t);
+                    return acc;
+                }, {});
+
+                renderCategories(Object.keys(grouped).map(cat => ({
+                    category: cat,
+                    count: grouped[cat].length
+                })));
+            } catch (error) {
+                console.error('Ошибка поиска:', error);
+            }
+        }
+
+        // Создание ИПР с задачами
+        async function createIdpWithTasks() {
+            const menteeName = document.getElementById('menteeName').value;
+            const menteeEmail = document.getElementById('menteeEmail').value;
+            const menteePosition = document.getElementById('menteePosition').value;
+            const menteeGrade = document.getElementById('menteeGrade').value;
+
+            if (selectedTemplates.size === 0) {
+                const confirmed = await showConfirm(
+                    'Создать пустой ИПР',
+                    'Вы не выбрали ни одной задачи. Создать пустой ИПР без задач?',
+                    {
+                        confirmText: 'Да, создать',
+                        cancelText: 'Отмена',
+                        confirmClass: 'btn-warning'
+                    }
+                );
+                
+                if (!confirmed) {
+                    return;
+                }
+            }
+
+            try {
+                console.log('[DEBUG] Creating IDP...');
+                
+                // Создаем ИПР
+                const idp = await apiRequest('/idps/', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        mentee_full_name: menteeName,
+                        mentee_email: menteeEmail || null,
+                        mentee_position: menteePosition || null,
+                        mentee_grade: menteeGrade || null
+                    })
+                });
+
+                console.log('[DEBUG] IDP created:', idp);
+                createdIdpId = idp.id;
+
+                // Добавляем задачи из шаблонов
+                if (selectedTemplates.size > 0) {
+                    console.log('[DEBUG] Adding tasks from templates...');
+                    await addTasksFromTemplates(idp.id);
+                }
+
+                // Показываем модальное окно
+                document.getElementById('createdMenteeName').textContent = menteeName;
+                document.getElementById('accessCode').textContent = idp.mentee.access_code;
+                document.getElementById('tasksAddedInfo').textContent = 
+                    selectedTemplates.size > 0 ? `Добавлено задач: ${selectedTemplates.size}` : '';
+                
+                console.log('[DEBUG] Opening success modal');
+                new bootstrap.Modal(document.getElementById('successModal')).show();
+            } catch (error) {
+                console.error('[ERROR] Failed to create IDP:', error);
+                
+                // Более понятное сообщение об ошибке
+                let errorMessage = error.message || 'Не удалось создать ИПР';
+                
+                // Если ошибка содержит информацию об активном ИПР
+                if (errorMessage.includes('уже есть активный ИПР')) {
+                    showWarning(errorMessage);
+                } else {
+                    showError(error);
+                }
+            }
+        }
+
+        // Добавление задач из выбранных шаблонов
+        async function addTasksFromTemplates(idpId) {
+            const templateIds = Array.from(selectedTemplates);
+            
+            for (const templateId of templateIds) {
+                try {
+                    const template = await apiRequest(`/templates/${templateId}`);
+                    
+                    // Рассчитываем deadline
+                    let deadline = null;
+                    if (template.duration_weeks) {
+                        const date = new Date();
+                        date.setDate(date.getDate() + (template.duration_weeks * 7));
+                        deadline = date.toISOString();
+                    }
+
+                    await apiRequest('/tasks/', {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            idp_id: idpId,
+                            title: `${template.skill_name} (Уровень ${template.level || 1})`,
+                            description: `${template.goal}\n\n${template.description}\n\nКритерии:\n${template.criteria}`,
+                            priority: 'medium',
+                            deadline: deadline,
+                            linked_skills: {
+                                category: template.category,
+                                skill: template.skill_name,
+                                level: template.level
+                            }
+                        })
+                    });
+                } catch (error) {
+                    console.error(`Ошибка добавления задачи ${templateId}:`, error);
+                }
+            }
+        }
+
+        // Создать без задач
+        async function skipTaskSelection() {
+            await createIdpWithTasks();
+        }
+
+        function goToDashboard() {
+            window.location.href = '/dashboard';
+        }
+
+        function goToKanban() {
+            window.location.href = `/kanban/${createdIdpId}`;
+        }
+
+        // Добавляем автоочистку ошибок при вводе
+        addInputValidationListeners('menteeInfoForm');
+        
+        // Инициализация
+        checkMentorAccess();
+    </script>
+</body>
+</html>

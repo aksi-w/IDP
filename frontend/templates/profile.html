@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль - ИПР</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css?v=16">
+</head>
+<body>
+    <!-- Навигация -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <span class="navbar-brand">💫 Сегодня выполнена еще одна крутая задача</span>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">Дашборд</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/profile">Профиль</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="logout()">Выход</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Профиль -->
+        <div class="card mb-4">
+            <div class="profile-header">
+                <div class="profile-avatar" id="profileAvatar">?</div>
+                <h2 class="text-center mb-2" id="profileName">Загрузка...</h2>
+                <p class="text-center mb-0" id="profileRole"></p>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-end mb-3">
+                    <button class="btn btn-primary btn-sm" onclick="openEditModal()">
+                        Редактировать профиль
+                    </button>
+                </div>
+                
+                <div class="row" id="mentorFields">
+                    <div class="col-md-6 mb-3">
+                        <strong>Email:</strong>
+                        <p class="text-muted" id="profileEmail">-</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Должность:</strong>
+                        <p class="text-muted" id="mentorPosition">-</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Грейд:</strong>
+                        <p class="text-muted" id="mentorGrade">-</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Создано ИПР:</strong>
+                        <p class="text-muted">
+                            <span id="mentorTotalIdps">0</span> всего / 
+                            <span id="mentorCompletedIdps">0</span> завершено
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="row" id="menteeFields" style="display: none;">
+                    <div class="col-md-6 mb-3">
+                        <strong>Фамилия и имя:</strong>
+                        <p class="text-muted" id="menteeName">-</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Email:</strong>
+                        <p class="text-muted" id="menteeEmail">-</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Должность:</strong>
+                        <p class="text-muted" id="menteePosition">-</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Грейд:</strong>
+                        <p class="text-muted" id="menteeGrade">-</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Код доступа:</strong>
+                        <p class="text-muted" id="menteeAccessCode">-</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Мои ИПР:</strong>
+                        <p class="text-muted">
+                            <span id="menteeTotalIdps">0</span> всего / 
+                            <span id="menteeCompletedIdps">0</span> завершено
+                        </p>
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <strong>Ментор:</strong>
+                        <p class="text-muted" id="menteeMentor">-</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Список менти (только для ментора) -->
+        <div id="menteeSection" style="display: none;">
+            <h3 class="mb-3">Мои менти</h3>
+            <div class="card">
+                <div class="card-body">
+                    <ul class="mentee-list" id="menteeList">
+                        <li class="text-center py-3">
+                            <div class="spinner-border spinner-border-sm" role="status"></div>
+                            Загрузка...
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно редактирования профиля -->
+    <div class="modal fade" id="editProfileModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Редактировать профиль</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editProfileForm">
+                        <div class="mb-3">
+                            <label for="editFullName" class="form-label">Фамилия и имя *</label>
+                            <input type="text" class="form-control" id="editFullName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editEmail" class="form-label">Email *</label>
+                            <input type="email" class="form-control" id="editEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editPosition" class="form-label">Должность</label>
+                            <input type="text" class="form-control" id="editPosition" placeholder="Например: QA Engineer">
+                        </div>
+                        <div class="mb-3">
+                            <label for="editGrade" class="form-label">Грейд</label>
+                            <input type="text" class="form-control" id="editGrade" placeholder="Например: Middle">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-primary" onclick="saveProfile()">Сохранить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/app.js?v=29"></script>
+    <script>
+        // currentUser уже объявлена в app.js
+        let isMentor = false;
+
+        async function loadProfile() {
+            if (!await checkAuth()) return;
+
+            try {
+                // Загружаем актуальные данные пользователя из API
+                console.log('[DEBUG] Loading user profile from API...');
+                currentUser = await apiRequest('/users/me');
+                console.log('[DEBUG] User profile loaded:', currentUser);
+                
+                // Определяем роль
+                isMentor = currentUser.role === 'mentor';
+                
+                // Сохраняем в localStorage
+                saveUser(currentUser);
+                
+                // Загрузка всех ИПР для подсчета статистики
+                const allIdps = await apiRequest('/idps/?include_all=true');
+                console.log('[DEBUG] All IDPs loaded:', allIdps.length);
+                
+                // Подсчет статистики
+                const totalIdps = allIdps.length;
+                const completedIdps = allIdps.filter(idp => idp.status === 'completed').length;
+                const idpStats = { total: totalIdps, completed: completedIdps };
+                
+                console.log('[DEBUG] IDP Stats:', idpStats);
+                
+                if (allIdps.length === 0) {
+                    // Если нет ИПР - показываем данные пользователя
+                    displayProfile(currentUser, { total: 0, completed: 0 }, null);
+                    if (isMentor) {
+                        document.getElementById('menteeSection').style.display = 'block';
+                        document.getElementById('menteeList').innerHTML = 
+                            '<li class="text-center py-3 text-muted">Нет менти</li>';
+                    }
+                    return;
+                }
+
+                // Получаем информацию о менторе для менти
+                let mentorInfo = null;
+                if (!isMentor) {
+                    const firstIdp = allIdps[0];
+                    if (firstIdp && firstIdp.mentor) {
+                        mentorInfo = firstIdp.mentor;
+                    }
+                }
+                
+                console.log('[DEBUG] Current user data:', currentUser);
+                console.log('[DEBUG] Is mentor:', isMentor);
+                console.log('[DEBUG] Mentor info:', mentorInfo);
+                
+                // Отображаем профиль
+                displayProfile(currentUser, idpStats, mentorInfo);
+
+                // Загружаем дополнительную информацию в зависимости от роли
+                if (isMentor) {
+                    await loadMentees();
+                }
+            } catch (error) {
+                console.error('[ERROR] loadProfile failed:', error);
+                showError(error);
+            }
+        }
+        
+        function displayProfile(user, idpStats, mentorInfo = null) {
+            console.log('[DEBUG] displayProfile called with:', user, idpStats, mentorInfo);
+            
+            if (!user) {
+                console.error('[ERROR] User is undefined in displayProfile');
+                return;
+            }
+            
+            // Отображение профиля
+            document.getElementById('profileAvatar').textContent = getInitials(user.full_name);
+            document.getElementById('profileName').textContent = user.full_name;
+            document.getElementById('profileRole').textContent = isMentor ? 'Ментор' : 'Менти';
+            
+            if (isMentor) {
+                // Показываем поля для ментора
+                document.getElementById('mentorFields').style.display = 'flex';
+                document.getElementById('menteeFields').style.display = 'none';
+                
+                document.getElementById('profileEmail').textContent = user.email || '-';
+                document.getElementById('mentorPosition').textContent = user.position || 'Не указано';
+                document.getElementById('mentorGrade').textContent = user.grade || 'Не указано';
+                document.getElementById('mentorTotalIdps').textContent = idpStats.total || 0;
+                document.getElementById('mentorCompletedIdps').textContent = idpStats.completed || 0;
+            } else {
+                // Показываем поля для менти
+                document.getElementById('mentorFields').style.display = 'none';
+                document.getElementById('menteeFields').style.display = 'flex';
+                
+                document.getElementById('menteeName').textContent = user.full_name;
+                document.getElementById('menteeEmail').textContent = user.email || '-';
+                document.getElementById('menteePosition').textContent = user.position || 'Не указано';
+                document.getElementById('menteeGrade').textContent = user.grade || 'Не указано';
+                document.getElementById('menteeAccessCode').textContent = user.access_code || '-';
+                document.getElementById('menteeTotalIdps').textContent = idpStats.total || 0;
+                document.getElementById('menteeCompletedIdps').textContent = idpStats.completed || 0;
+                
+                if (mentorInfo) {
+                    document.getElementById('menteeMentor').textContent = 
+                        `${mentorInfo.full_name} (${mentorInfo.email || 'email не указан'})`;
+                } else {
+                    document.getElementById('menteeMentor').textContent = '-';
+                }
+            }
+        }
+
+        async function loadMentees() {
+            // Проверяем что это действительно ментор
+            if (!isMentor) {
+                console.log('[DEBUG] Not a mentor, skipping loadMentees');
+                return;
+            }
+            
+            document.getElementById('menteeSection').style.display = 'block';
+            
+            try {
+                console.log('[DEBUG] Loading mentees...');
+                const mentees = await apiRequest('/idps/mentees/list');
+                console.log('[DEBUG] Mentees:', mentees);
+                
+                const idps = await apiRequest('/idps/');
+                console.log('[DEBUG] IDPs:', idps);
+                
+                const menteeList = document.getElementById('menteeList');
+                
+                if (mentees.length === 0) {
+                    menteeList.innerHTML = '<li class="text-center py-3 text-muted">Нет активных менти</li>';
+                    return;
+                }
+
+                menteeList.innerHTML = mentees.map((mentee, index) => {
+                    const menteeIdp = idps.find(idp => idp.mentee_id === mentee.id);
+                    
+                    if (!menteeIdp) {
+                        console.warn(`ИПР не найден для менти ${mentee.full_name}`);
+                        return `
+                            <li class="mentee-item">
+                                <div>
+                                    <h6 class="mb-1">${mentee.full_name}</h6>
+                                    <small class="text-muted">
+                                        Код доступа: ${mentee.access_code}<br>
+                                        <span class="text-danger">ИПР не найден</span>
+                                    </small>
+                                </div>
+                            </li>
+                        `;
+                    }
+                    
+                    return `
+                        <li class="mentee-item">
+                            <div>
+                                <h6 class="mb-1">${mentee.full_name}</h6>
+                                <small class="text-muted">
+                                    ${mentee.email || ''}<br>
+                                    Код доступа: ${mentee.access_code}
+                                </small>
+                            </div>
+                            <div>
+                                <a href="/kanban/${menteeIdp.id}" class="btn btn-sm btn-primary">
+                                    Открыть ИПР
+                                </a>
+                            </div>
+                        </li>
+                    `;
+                }).join('');
+            } catch (error) {
+                showError(error);
+            }
+        }
+
+        function openEditModal() {
+            if (!currentUser) {
+                showError({ message: 'Данные пользователя не загружены' });
+                return;
+            }
+            
+            // Заполняем форму текущими данными
+            document.getElementById('editFullName').value = currentUser.full_name || '';
+            document.getElementById('editEmail').value = currentUser.email || '';
+            document.getElementById('editPosition').value = currentUser.position || '';
+            document.getElementById('editGrade').value = currentUser.grade || '';
+            
+            // Открываем модальное окно
+            new bootstrap.Modal(document.getElementById('editProfileModal')).show();
+        }
+
+        async function saveProfile() {
+            console.log('[DEBUG] saveProfile called');
+            
+            // Очистка предыдущих ошибок
+            clearAllErrors('editProfileForm');
+            
+            const fullName = document.getElementById('editFullName').value.trim();
+            const email = document.getElementById('editEmail').value.trim();
+            const position = document.getElementById('editPosition').value.trim();
+            const grade = document.getElementById('editGrade').value.trim();
+            
+            console.log('[DEBUG] Form values:', { fullName, email, position, grade });
+            
+            let hasErrors = false;
+            
+            // Валидация ФИ
+            if (!validateRequired(fullName)) {
+                showFieldError('editFullName', 'ФИ обязательно');
+                hasErrors = true;
+            } else if (!validateFullName(fullName)) {
+                showFieldError('editFullName', 'Введите Фамилию и Имя');
+                hasErrors = true;
+            } else {
+                showFieldSuccess('editFullName');
+            }
+            
+            // Валидация email
+            if (!validateRequired(email)) {
+                showFieldError('editEmail', 'Email обязателен');
+                hasErrors = true;
+            } else if (!validateEmail(email)) {
+                showFieldError('editEmail', 'Введите корректный email');
+                hasErrors = true;
+            } else {
+                showFieldSuccess('editEmail');
+            }
+            
+            // Должность и грейд опциональны
+            if (position) {
+                showFieldSuccess('editPosition');
+            }
+            if (grade) {
+                showFieldSuccess('editGrade');
+            }
+            
+            if (hasErrors) return;
+            
+            try {
+                console.log('[DEBUG] Sending PATCH request...');
+                
+                const updatedUser = await apiRequest('/users/me', {
+                    method: 'PATCH',
+                    body: JSON.stringify({
+                        full_name: fullName,
+                        email: email,
+                        position: position || null,
+                        grade: grade || null
+                    })
+                });
+                
+                console.log('[DEBUG] Profile updated successfully:', updatedUser);
+                
+                // Обновляем локальные данные с сохранением role и id
+                const newUserData = {
+                    id: currentUser.id,
+                    full_name: updatedUser.full_name,
+                    email: updatedUser.email,
+                    role: updatedUser.role || currentUser.role,
+                    position: updatedUser.position,
+                    grade: updatedUser.grade,
+                    access_code: updatedUser.access_code
+                };
+                
+                console.log('[DEBUG] New user data:', newUserData);
+                
+                // Сохраняем в localStorage
+                saveUser(newUserData);
+                currentUser = newUserData;
+                
+                console.log('[DEBUG] User saved to localStorage');
+                
+                // Закрываем модальное окно
+                const modalElement = document.getElementById('editProfileModal');
+                const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                if (modalInstance) {
+                    modalInstance.hide();
+                }
+                
+                console.log('[DEBUG] Modal closed');
+                
+                // Перезагружаем профиль
+                await loadProfile();
+                
+                console.log('[DEBUG] Profile reloaded');
+                
+                // Показываем сообщение об успехе
+                showSuccess('Профиль успешно обновлен!');
+            } catch (error) {
+                console.error('[ERROR] Save profile failed:', error);
+                showError({ 
+                    message: 'Ошибка при сохранении профиля: ' + (error.message || 'Неизвестная ошибка') 
+                });
+            }
+        }
+
+        // Добавляем автоочистку ошибок при вводе
+        addInputValidationListeners('editProfileForm');
+        
+        // Загрузка при открытии
+        loadProfile();
+    </script>
+</body>
+</html>
+
+
