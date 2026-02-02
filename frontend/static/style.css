@@ -364,6 +364,33 @@ body {
     box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
 }
 
+/* Плейсхолдеры - более блеклые */
+input::placeholder,
+textarea::placeholder,
+.form-control::placeholder,
+.form-select::placeholder {
+    color: #c5c5c5 !important;
+    opacity: 0.5 !important;
+}
+
+input::-webkit-input-placeholder,
+textarea::-webkit-input-placeholder {
+    color: #c5c5c5 !important;
+    opacity: 0.5 !important;
+}
+
+input::-moz-placeholder,
+textarea::-moz-placeholder {
+    color: #c5c5c5 !important;
+    opacity: 0.5 !important;
+}
+
+input:-ms-input-placeholder,
+textarea:-ms-input-placeholder {
+    color: #c5c5c5 !important;
+    opacity: 0.5 !important;
+}
+
 /* Логин страница */
 .login-container {
     min-height: 100vh;

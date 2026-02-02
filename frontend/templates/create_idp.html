@@ -131,9 +131,10 @@
                         <div class="mb-4">
                             <div class="input-group">
                                 <input type="text" class="form-control" id="searchInput" 
-                                       placeholder="Поиск задач по названию, описанию...">
-                                <button class="btn btn-outline-secondary" onclick="searchTemplates()">
-                                    🔍 Поиск
+                                       placeholder="Поиск по названию задачи..."
+                                       onkeyup="filterTemplatesLocal()">
+                                <button class="btn btn-outline-secondary" onclick="clearSearch()">
+                                    ✖ Очистить
                                 </button>
                             </div>
                         </div>
@@ -200,6 +201,7 @@
         let createdIdpId = null;
         let selectedTemplates = new Set();
         let allCategories = [];
+        let allTemplatesCache = {}; // Кэш всех загруженных шаблонов
 
         // Проверка доступа ментора
         async function checkMentorAccess() {
@@ -325,42 +327,144 @@
                 const templates = await apiRequest(`/templates/by-category/${encodeURIComponent(category)}`);
                 const container = document.getElementById(containerId);
                 
+                // Сохраняем в кэш
+                allTemplatesCache[category] = templates;
+                
                 if (templates.length === 0) {
                     container.innerHTML = '<p class="text-muted">Нет доступных задач</p>';
                     return;
                 }
 
-                container.innerHTML = templates.map(t => `
-                    <div class="template-card ${selectedTemplates.has(t.id) ? 'selected' : ''}" 
-                         onclick="toggleTemplate(${t.id})">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1">
-                                    ${t.skill_name}
-                                    ${t.level ? `<span class="badge level-badge bg-info">Уровень ${t.level}</span>` : ''}
-                                    <span class="badge bg-secondary level-badge">${t.source === 'kb_tasks' ? 'БЗ' : 'Hard Skills'}</span>
-                                </h6>
-                                <p class="mb-1 text-muted small">${t.goal || 'Нет описания цели'}</p>
-                                ${t.duration_weeks ? `<small class="text-muted">⏱ ${t.duration_weeks} недель</small>` : ''}
-                            </div>
-                            <div>
-                                <input type="checkbox" class="form-check-input" 
-                                       ${selectedTemplates.has(t.id) ? 'checked' : ''} 
-                                       onclick="event.stopPropagation()">
-                            </div>
-                        </div>
-                        ${t.description ? `
-                            <details class="mt-2">
-                                <summary class="small text-primary" style="cursor: pointer;">Подробнее</summary>
-                                <p class="small mt-2 mb-0">${t.description.substring(0, 300)}${t.description.length > 300 ? '...' : ''}</p>
-                            </details>
-                        ` : ''}
-                    </div>
-                `).join('');
+                renderTemplates(templates, container);
             } catch (error) {
                 console.error('Ошибка загрузки шаблонов:', error);
                 document.getElementById(containerId).innerHTML = '<p class="text-danger">Ошибка загрузки</p>';
             }
+        }
+        
+        // Отрисовка шаблонов
+        function renderTemplates(templates, container) {
+            container.innerHTML = '';
+            
+            templates.forEach(t => {
+                const card = document.createElement('div');
+                card.className = `template-card ${selectedTemplates.has(t.id) ? 'selected' : ''}`;
+                card.dataset.templateId = t.id;
+                card.dataset.skillName = (t.skill_name || '').toLowerCase();
+                card.onclick = () => toggleTemplate(t.id);
+                
+                card.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1">
+                                ${t.skill_name}
+                                ${t.level ? `<span class="badge level-badge bg-info">Уровень ${t.level}</span>` : ''}
+                                <span class="badge bg-secondary level-badge">${t.source === 'kb_tasks' ? 'БЗ' : 'Hard Skills'}</span>
+                            </h6>
+                            <p class="mb-1 text-muted small">${t.goal || 'Нет описания цели'}</p>
+                            ${t.duration_weeks ? `<small class="text-muted">⏱ ${t.duration_weeks} недель</small>` : ''}
+                        </div>
+                        <div>
+                            <input type="checkbox" class="form-check-input" 
+                                   ${selectedTemplates.has(t.id) ? 'checked' : ''} 
+                                   onclick="event.stopPropagation()">
+                        </div>
+                    </div>
+                    ${t.description ? `
+                        <details class="mt-2">
+                            <summary class="small text-primary" style="cursor: pointer;">Подробнее</summary>
+                            <p class="small mt-2 mb-0">${t.description.substring(0, 300)}${t.description.length > 300 ? '...' : ''}</p>
+                        </details>
+                    ` : ''}
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+        
+        // Локальная фильтрация шаблонов (только по названию)
+        async function filterTemplatesLocal() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            
+            console.log('[ПОИСК] Запрос:', query);
+            
+            if (!query) {
+                // Показываем все карточки и секции
+                const allCards = document.querySelectorAll('.template-card');
+                allCards.forEach(card => {
+                    card.style.display = '';
+                });
+                
+                const allAccordionItems = document.querySelectorAll('.accordion-item');
+                allAccordionItems.forEach(item => {
+                    item.style.display = '';
+                });
+                
+                console.log('[ПОИСК] Показаны все карточки');
+                return;
+            }
+            
+            // Загружаем все категории, если еще не загружены
+            for (let i = 0; i < allCategories.length; i++) {
+                const category = allCategories[i];
+                const containerId = `templates${i}`;
+                const container = document.getElementById(containerId);
+                
+                // Проверяем, загружена ли уже эта категория
+                if (!allTemplatesCache[category.category]) {
+                    console.log('[ПОИСК] Загружаем категорию:', category.category);
+                    await loadTemplatesForCategory(category.category, containerId);
+                }
+            }
+            
+            // Теперь фильтруем
+            const allCards = document.querySelectorAll('.template-card');
+            console.log('[ПОИСК] Всего карточек:', allCards.length);
+            
+            // Открываем все секции аккордеона
+            const allCollapse = document.querySelectorAll('.accordion-collapse');
+            allCollapse.forEach(collapse => {
+                collapse.classList.add('show');
+            });
+            
+            let found = 0;
+            
+            // Фильтруем карточки - ищем по видимому тексту названия
+            allCards.forEach(card => {
+                const h6Element = card.querySelector('h6');
+                const titleText = h6Element ? h6Element.textContent.toLowerCase() : '';
+                const dataSkillName = card.dataset.skillName || '';
+                
+                const matches = titleText.includes(query) || dataSkillName.includes(query);
+                
+                if (matches) {
+                    console.log('[ПОИСК] Найдено:', titleText.trim().substring(0, 50));
+                    found++;
+                }
+                
+                card.style.display = matches ? '' : 'none';
+            });
+            
+            // Скрываем пустые секции (где нет подходящих карточек)
+            const allAccordionItems = document.querySelectorAll('.accordion-item');
+            allAccordionItems.forEach(item => {
+                const accordionBody = item.querySelector('.accordion-body');
+                const visibleCards = accordionBody.querySelectorAll('.template-card:not([style*="display: none"])');
+                
+                if (visibleCards.length === 0) {
+                    item.style.display = 'none';
+                } else {
+                    item.style.display = '';
+                }
+            });
+            
+            console.log('[ПОИСК] Показано карточек:', found);
+        }
+        
+        // Очистка поиска
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            filterTemplatesLocal();
         }
 
         // Переключение выбора шаблона
@@ -385,37 +489,9 @@
             document.getElementById('selectedCount2').textContent = count;
         }
 
-        // Поиск шаблонов
+        // Поиск шаблонов (не используется, заменен на локальную фильтрацию)
         async function searchTemplates() {
-            const query = document.getElementById('searchInput').value;
-            if (!query.trim()) {
-                await loadCategories();
-                return;
-            }
-
-            try {
-                const results = await apiRequest(`/templates/search?q=${encodeURIComponent(query)}`);
-                const accordion = document.getElementById('categoriesAccordion');
-                
-                if (results.length === 0) {
-                    accordion.innerHTML = '<p class="text-center text-muted mt-4">Ничего не найдено</p>';
-                    return;
-                }
-
-                // Группируем результаты по категориям
-                const grouped = results.reduce((acc, t) => {
-                    if (!acc[t.category]) acc[t.category] = [];
-                    acc[t.category].push(t);
-                    return acc;
-                }, {});
-
-                renderCategories(Object.keys(grouped).map(cat => ({
-                    category: cat,
-                    count: grouped[cat].length
-                })));
-            } catch (error) {
-                console.error('Ошибка поиска:', error);
-            }
+            filterTemplatesLocal();
         }
 
         // Создание ИПР с задачами

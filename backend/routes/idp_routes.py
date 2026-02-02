@@ -33,6 +33,10 @@ def create_idp(
         if idp_data.mentee_grade:
             mentee.grade = idp_data.mentee_grade
         
+        # если у менти нет кода доступа — генерируем и сохраняем
+        if not mentee.access_code:
+            mentee.access_code = generate_access_code()
+        
         active_idp = db.query(IDP).filter(
             IDP.mentee_id == mentee.id,
             IDP.mentor_id == current_user.id,
