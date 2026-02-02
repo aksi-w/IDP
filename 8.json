@@ -1,0 +1,807 @@
+{
+    "profile": {
+        "fullName": "Савина Наталья",
+        "position": "QA Manual",
+        "grade": "junior",
+        "track": "QA Auto, API testing, Python"
+    },
+    "selectedSkills": {
+        "владение_языками_программирования": {
+            "current": 0,
+            "target": 1
+        },
+        "владение_ide": {
+            "current": 0,
+            "target": 1
+        },
+        "внедрение_новых_технологий": {
+            "current": 0,
+            "target": 1
+        },
+        "проектирование_тест_дизайн": {
+            "current": 0,
+            "target": 1
+        },
+        "скорость_написания_автотестов": {
+            "current": 0,
+            "target": 1
+        },
+        "качество_кода": {
+            "current": 0,
+            "target": 1
+        },
+        "уровень_компетенции_сложность_задач": {
+            "current": 0,
+            "target": 1
+        },
+        "использование_ai_для_aqa": {
+            "current": 0,
+            "target": 2
+        },
+        "тестирование_производительности": {
+            "current": 0,
+            "target": 1
+        },
+        "типы_автоматизированного_тестирования": {
+            "current": 0,
+            "target": 1
+        }
+    },
+    "developmentPlan": {
+        "владение_языками_программирования": {
+            "name": "Владение языками программирования",
+            "currentLevel": 0,
+            "targetLevel": 1,
+            "activities": [
+                {
+                    "id": "владение_языками_программирования_1754667297540",
+                    "name": "Проверить знания по языку программирования Python",
+                    "level": 1,
+                    "duration": 1,
+                    "status": "planned",
+                    "completed": false,
+                    "comment": "",
+                    "relatedSkills": [
+                        "владение_ide",
+                        "качество_кода",
+                        "уровень_компетенции_сложность_задач"
+                    ],
+                    "expectedResult": "- Изучены все материалы и заданы вопросы\n- Репозиторий с API-тестами, минимум по 5-7 тестов по каждому направлению\n",
+                    "description": "1) Типы данных: int, float, str, bool, cписки, кортежи, множества, словари, функции, чтение/запись файлов, модули, pytest\n2) ООП, dataclass, исключения, логирование, typing, генераторы\n3) requests / httpx, JSONSchema валидация, мок-сервер (pytest-httpserver)\n\nТренажеры:\nhttps://itresume.ru/problems/selection-python\nhttps://letpy.com/\nhttps://www.codewars.com/\nhttps://www.codewars.com/collections/python-practice-1\n\nhttps://docs.python.org/3/\nhttps://www.learnpython.org/\n\nhttps://stepik.org/course/58852/promo?search=7253179070\nhttps://stepik.org/course/68343/promo?search=7253179071\n\nhttps://stepik.org/course/100707/promo?search=7253179072\n\nНаписать API-тесты на endpoints Бургер Кинг\n- проверка статуса\n- проверка схемы\n- пред и пост-условия\n- функциональные проверки / компонентные\n- сценарные проверки",
+                    "subtasks": [
+                        {
+                            "title": "Типы данных: int, float, str, bool, cписки, кортежи, множества, словари, функции, чтение/запись файлов, модули, pytest",
+                            "description": "",
+                            "expectedResult": "",
+                            "done": false
+                        },
+                        {
+                            "title": "ООП, dataclass, исключения, логирование, typing, генераторы",
+                            "description": "",
+                            "expectedResult": "",
+                            "done": false
+                        },
+                        {
+                            "title": "requests / httpx, JSONSchema валидация, мок-сервер (pytest-httpserver)",
+                            "description": "",
+                            "expectedResult": "",
+                            "done": false
+                        }
+                    ],
+                    "priority": "medium"
+                }
+            ],
+            "totalDuration": 1
+        },
+        "владение_ide": {
+            "name": "Владение IDE",
+            "currentLevel": 0,
+            "targetLevel": 1,
+            "activities": [
+                {
+                    "id": "владение_ide_1754667333041",
+                    "name": "Познакомиться с библиотеками для API тестирования - Python",
+                    "level": 1,
+                    "duration": 1,
+                    "status": "planned",
+                    "completed": false,
+                    "comment": "",
+                    "relatedSkills": [
+                        "использование_ai_для_aqa",
+                        "скорость_написания_автотестов",
+                        "качество_кода",
+                        "владение_языками_программирования",
+                        "тестирование_данных_и_схемы",
+                        "api_тестирование_backend",
+                        "тестирование_ролевой_модели_и_авторизации",
+                        "планирование_и_тестовая_пирамида_backend",
+                        "типы_автоматизированного_тестирования"
+                    ],
+                    "expectedResult": "Изучены все материалы и заданы вопросы\nПонадобится в задачах дальше, проверяется позже",
+                    "description": "https://docs.google.com/spreadsheets/d/1TuWlzqaTNE17cygXfUuXho29YTJ3nN0r3qmHs7_XxHA/edit?gid=544622994#gid=544622994\n- Введение в pytest\n- Параметризация и маркеры\n- Ассерты и обработка исключений\n- DRY и паттерны проектирования\n- Работа с конфигурацией\n- Логирование и отчёты",
+                    "subtasks": [
+                        {
+                            "title": "Введение в pytest",
+                            "description": "",
+                            "expectedResult": "",
+                            "done": false
+                        },
+                        {
+                            "title": "Параметризация и маркеры",
+                            "description": "",
+                            "expectedResult": "",
+                            "done": false
+                        },
+                        {
+                            "title": "Ассерты и обработка исключений",
+                            "description": "",
+                            "expectedResult": "",
+                            "done": false
+                        },
+                        {
+                            "title": "DRY и паттерны проектирования",
+                            "description": "",
+                            "expectedResult": "",
+                            "done": false
+                        },
+                        {
+                            "title": "Работа с конфигурацией",
+                            "description": "",
+                            "expectedResult": "",
+                            "done": false
+                        },
+                        {
+                            "title": "Логирование и отчёты",
+                            "description": "",
+                            "expectedResult": "",
+                            "done": false
+                        }
+                    ],
+                    "priority": "medium"
+                }
+            ],
+            "totalDuration": 1
+        },
+        "внедрение_новых_технологий": {
+            "name": "Внедрение новых технологий",
+            "currentLevel": 0,
+            "targetLevel": 1,
+            "activities": [],
+            "totalDuration": 2
+        },
+        "проектирование_тест_дизайн": {
+            "name": "Проектирование (тест дизайн)",
+            "currentLevel": 0,
+            "targetLevel": 1,
+            "activities": [
+                {
+                    "id": "проектирование_тест_дизайн_1754667356622",
+                    "name": "УБРАТЬ Познакомиться с Базовыми элементы тестирования API - Python",
+                    "level": 1,
+                    "duration": 1,
+                    "status": "planned",
+                    "completed": false,
+                    "comment": "",
+                    "relatedSkills": [
+                        "скорость_написания_автотестов",
+                        "качество_кода",
+                        "уровень_компетенции_сложность_задач",
+                        "владение_ide",
+                        "использование_ai_для_aqa",
+                        "типы_автоматизированного_тестирования",
+                        "тестирование_данных_и_схемы"
+                    ],
+                    "description": "Написать API-тесты на endpoints Бургер Кинг\n- проверка статуса\n- проверка схемы\n- пред и пост-условия\n- функциональные проверки / компонентные\n- сценарные проверки\n\n_\nМожно использовать ИИ",
+                    "expectedResult": "Репозиторий с API-тестами, минимум по 5-7 тестов по каждому направлению",
+                    "subtasks": [
+                        {
+                            "title": "проверка статуса",
+                            "description": "",
+                            "expectedResult": "",
+                            "done": false
+                        },
+                        {
+                            "title": "проверка схемы",
+                            "description": "",
+                            "expectedResult": "",
+                            "done": false
+                        },
+                        {
+                            "title": "пред и пост-условия",
+                            "description": "",
+                            "expectedResult": "",
+                            "done": false
+                        },
+                        {
+                            "title": "функциональные проверки / компонентные",
+                            "description": "",
+                            "expectedResult": "",
+                            "done": false
+                        },
+                        {
+                            "title": "сценарные проверки",
+                            "description": "",
+                            "expectedResult": "",
+                            "done": false
+                        }
+                    ],
+                    "priority": "high"
+                }
+            ],
+            "totalDuration": 1
+        },
+        "скорость_написания_автотестов": {
+            "name": "Скорость написания автотестов",
+            "currentLevel": 0,
+            "targetLevel": 1,
+            "activities": [],
+            "totalDuration": 2
+        },
+        "качество_кода": {
+            "name": "Качество кода",
+            "currentLevel": 0,
+            "targetLevel": 1,
+            "activities": [],
+            "totalDuration": 2
+        },
+        "уровень_компетенции_сложность_задач": {
+            "name": "Уровень компетенции (сложность задач)",
+            "currentLevel": 0,
+            "targetLevel": 1,
+            "activities": [],
+            "totalDuration": 2
+        },
+        "использование_ai_для_aqa": {
+            "name": "Использование AI для AQA",
+            "currentLevel": 0,
+            "targetLevel": 2,
+            "activities": [],
+            "totalDuration": 4
+        },
+        "тестирование_производительности": {
+            "name": "Тестирование производительности",
+            "currentLevel": 0,
+            "targetLevel": 1,
+            "activities": [
+                {
+                    "id": "тестирование_производительности_1754667404670",
+                    "name": "Нефункциональное тестирование на Python",
+                    "level": 1,
+                    "duration": 1,
+                    "status": "planned",
+                    "completed": false,
+                    "comment": "",
+                    "relatedSkills": [
+                        "типы_автоматизированного_тестирования",
+                        "проектирование_тест_дизайн",
+                        "использование_ai_для_aqa",
+                        "владение_ide",
+                        "качество_кода",
+                        "уровень_компетенции_сложность_задач",
+                        "владение_языками_программирования"
+                    ],
+                    "description": "",
+                    "expectedResult": "",
+                    "subtasks": [
+                        {
+                            "title": "Написать пару нагрузочных тестов",
+                            "description": "Изучить теорию и попробовать на практике. Проект надо согласовать (либо не делать стресс-тесты, чтобы не положить ничего)\nНагрузочное тестирование: добавить Locust/k6 для оценки производительности и стресс-сценариев.\n\nПример можно глянуть тут:\n- https://wiki.surfstudio.ru/pages/viewpage.action?pageId=86263220\n- https://jira.surf.dev/browse/IKH-1641 (но тут js, но по смыслу я думаю все равно полезно будет посмотреть)\n\n_\nМожно использовать ИИ\n\nhttps://docs.pact.io/\nhttps://swagger.io/specification/\n\nhttps://www.zaproxy.org/docs/\nhttps://docs.locust.io/\nhttps://jmeter.apache.org/",
+                            "expectedResult": "Репозиторий с API-тестами, минимум по 2-5 тестов по каждому направлению",
+                            "done": false
+                        },
+                        {
+                            "title": "Решить задачу на Inkahran",
+                            "description": "Нагрузочное тестирование по требованиям: https://wiki.surfstudio.ru/pages/viewpage.action?pageId=98894725",
+                            "expectedResult": "Реализован ручной запуск проверки нагрузки, добавлен отчет",
+                            "done": false
+                        }
+                    ],
+                    "priority": "medium"
+                }
+            ],
+            "totalDuration": 1
+        },
+        "типы_автоматизированного_тестирования": {
+            "name": "Типы автоматизированного тестирования",
+            "currentLevel": 0,
+            "targetLevel": 1,
+            "activities": [
+                {
+                    "id": "типы_автоматизированного_тестирования_1754667261929",
+                    "name": "Изучить виды тестирования Backend",
+                    "level": 1,
+                    "duration": 1,
+                    "status": "planned",
+                    "completed": false,
+                    "comment": "",
+                    "relatedSkills": [
+                        "планирование_и_тестовая_пирамида_backend",
+                        "api_тестирование_backend",
+                        "тестирование_данных_и_схемы",
+                        "тестирование_ролевой_модели_и_авторизации"
+                    ],
+                    "description": "- https://wiki.surfstudio.ru/pages/viewpage.action?pageId=54407347\n- https://wiki.surfstudio.ru/pages/viewpage.action?pageId=9165423\n- https://wiki.surfstudio.ru/pages/viewpage.action?pageId=54398053\n- https://wiki.surfstudio.ru/pages/viewpage.action?pageId=54400942",
+                    "expectedResult": "Изучены все материалы и заданы вопросы\nПонадобится в задачах дальше, проверяется позже",
+                    "priority": "high"
+                }
+            ],
+            "totalDuration": 1
+        },
+        "планирование_и_тестовая_пирамида_backend": {
+            "name": "Планирование и тестовая пирамида Backend",
+            "currentLevel": 0,
+            "targetLevel": 0,
+            "activities": [],
+            "totalDuration": 0
+        },
+        "api_тестирование_backend": {
+            "name": "API тестирование Backend",
+            "currentLevel": 0,
+            "targetLevel": 0,
+            "activities": [],
+            "totalDuration": 0
+        },
+        "тестирование_данных_и_схемы": {
+            "name": "Тестирование данных и схемы",
+            "currentLevel": 0,
+            "targetLevel": 0,
+            "activities": [],
+            "totalDuration": 0
+        },
+        "тестирование_ролевой_модели_и_авторизации": {
+            "name": "Тестирование ролевой модели и авторизации",
+            "currentLevel": 0,
+            "targetLevel": 0,
+            "activities": [],
+            "totalDuration": 0
+        },
+        "автотесты_логирования_backend": {
+            "name": "Автотесты логирования Backend",
+            "currentLevel": 0,
+            "targetLevel": 1,
+            "activities": [
+                {
+                    "id": "автотесты_логирования_backend_1762925300025_jqgd4",
+                    "name": "Попробовать решить задачу на Inkahran",
+                    "level": 1,
+                    "duration": 2,
+                    "status": "planned",
+                    "completed": false,
+                    "comment": "",
+                    "description": "Нагрузочное тестирование по требованиям: https://wiki.surfstudio.ru/pages/viewpage.action?pageId=98894725",
+                    "expectedResult": "Реализован ручной запуск проверки нагрузки, добавлен отчет",
+                    "relatedSkills": [
+                        "api_тестирование_backend",
+                        "планирование_и_тестовая_пирамида_backend",
+                        "тестирование_производительности_backend"
+                    ],
+                    "priority": "medium"
+                }
+            ],
+            "totalDuration": 2
+        },
+        "тестирование_производительности_backend": {
+            "name": "Тестирование производительности Backend",
+            "currentLevel": 0,
+            "targetLevel": 0,
+            "activities": [],
+            "totalDuration": 0
+        },
+        "разработка_плана_тестирования": {
+            "name": "Разработка плана тестирования",
+            "currentLevel": 0,
+            "targetLevel": 0,
+            "activities": [],
+            "totalDuration": 0
+        },
+        "масштаб_задач": {
+            "name": "Масштаб задач",
+            "currentLevel": 0,
+            "targetLevel": 1,
+            "activities": [
+                {
+                    "id": "масштаб_задач_1762928926754_2utxi",
+                    "name": "Автоматическое создание задач по плану в таблице в Jira",
+                    "level": 1,
+                    "duration": 2,
+                    "status": "planned",
+                    "completed": false,
+                    "comment": "",
+                    "description": "",
+                    "expectedResult": "",
+                    "relatedSkills": [
+                        "разработка_плана_тестирования"
+                    ],
+                    "subtasks": [
+                        {
+                            "title": "Выработать формат шаблона для ведения плана",
+                            "description": "Взять существующие шаблоны или разработать новый, чтобы при создании задачи в Jira заполнялись нужные поля\n- название\n- описание\n- время\n- может что-то еще? наши параметры для задач",
+                            "expectedResult": "Создан шаблон для заполнения, который в дальнейшем будет отправляться в Jira в виде задач",
+                            "done": false
+                        },
+                        {
+                            "title": "Написать скрипт, для отправки задач в Jira",
+                            "description": "Тренироваться можно на проекте SURFQA\n- Вероятно это скрипт внутри Google-таблиц, но можно и другое решение продумать\n- Связь с Jira как реализована можно посмотреть тут: https://docs.google.com/spreadsheets/d/1RNTflqJGZ3sJNxy9koQarEbZXtqXliJrf7kbe1Af8oY/edit?gid=653131460#gid=653131460 или тут: https://wiki.surfstudio.ru/pages/viewpage.action?pageId=54411023",
+                            "expectedResult": "Создан инструмент, который формирует из плана тестирования в гугл-документах задачи в Jira в верном формате, в нужный спринт/эпик и тп",
+                            "done": false
+                        }
+                    ],
+                    "priority": "urgent"
+                }
+            ],
+            "totalDuration": 2
+        }
+    },
+    "progress": {
+        "владение_языками_программирования": {
+            "name": "Владение языками программирования",
+            "currentLevel": 0,
+            "targetLevel": 1,
+            "activities": [
+                {
+                    "id": "владение_языками_программирования_1754667297540",
+                    "name": "Проверить знания по языку программирования Python",
+                    "level": 1,
+                    "duration": 1,
+                    "status": "planned",
+                    "completed": false,
+                    "comment": "",
+                    "relatedSkills": [
+                        "владение_ide",
+                        "качество_кода",
+                        "уровень_компетенции_сложность_задач"
+                    ],
+                    "expectedResult": "- Изучены все материалы и заданы вопросы\n- Репозиторий с API-тестами, минимум по 5-7 тестов по каждому направлению\n",
+                    "description": "1) Типы данных: int, float, str, bool, cписки, кортежи, множества, словари, функции, чтение/запись файлов, модули, pytest\n2) ООП, dataclass, исключения, логирование, typing, генераторы\n3) requests / httpx, JSONSchema валидация, мок-сервер (pytest-httpserver)\n\nТренажеры:\nhttps://itresume.ru/problems/selection-python\nhttps://letpy.com/\nhttps://www.codewars.com/\nhttps://www.codewars.com/collections/python-practice-1\n\nhttps://docs.python.org/3/\nhttps://www.learnpython.org/\n\nhttps://stepik.org/course/58852/promo?search=7253179070\nhttps://stepik.org/course/68343/promo?search=7253179071\n\nhttps://stepik.org/course/100707/promo?search=7253179072\n\nНаписать API-тесты на endpoints Бургер Кинг\n- проверка статуса\n- проверка схемы\n- пред и пост-условия\n- функциональные проверки / компонентные\n- сценарные проверки",
+                    "comments": [],
+                    "subtasks": [
+                        {
+                            "title": "Типы данных: int, float, str, bool, cписки, кортежи, множества, словари, функции, чтение/запись файлов, модули, pytest",
+                            "description": "",
+                            "expectedResult": "",
+                            "done": false
+                        },
+                        {
+                            "title": "ООП, dataclass, исключения, логирование, typing, генераторы",
+                            "description": "",
+                            "expectedResult": "",
+                            "done": false
+                        },
+                        {
+                            "title": "requests / httpx, JSONSchema валидация, мок-сервер (pytest-httpserver)",
+                            "description": "",
+                            "expectedResult": "",
+                            "done": false
+                        }
+                    ],
+                    "priority": "medium"
+                }
+            ],
+            "totalDuration": 1,
+            "completedActivities": 0,
+            "overallProgress": 0
+        },
+        "владение_ide": {
+            "name": "Владение IDE",
+            "currentLevel": 0,
+            "targetLevel": 1,
+            "activities": [
+                {
+                    "id": "владение_ide_1754667333041",
+                    "name": "Познакомиться с библиотеками для API тестирования - Python",
+                    "level": 1,
+                    "duration": 1,
+                    "status": "planned",
+                    "completed": false,
+                    "comment": "",
+                    "relatedSkills": [
+                        "использование_ai_для_aqa",
+                        "скорость_написания_автотестов",
+                        "качество_кода",
+                        "владение_языками_программирования",
+                        "тестирование_данных_и_схемы",
+                        "api_тестирование_backend",
+                        "тестирование_ролевой_модели_и_авторизации",
+                        "планирование_и_тестовая_пирамида_backend",
+                        "типы_автоматизированного_тестирования"
+                    ],
+                    "expectedResult": "Изучены все материалы и заданы вопросы\nПонадобится в задачах дальше, проверяется позже",
+                    "description": "https://docs.google.com/spreadsheets/d/1TuWlzqaTNE17cygXfUuXho29YTJ3nN0r3qmHs7_XxHA/edit?gid=544622994#gid=544622994\n- Введение в pytest\n- Параметризация и маркеры\n- Ассерты и обработка исключений\n- DRY и паттерны проектирования\n- Работа с конфигурацией\n- Логирование и отчёты",
+                    "comments": [],
+                    "subtasks": [
+                        {
+                            "title": "Введение в pytest",
+                            "description": "",
+                            "expectedResult": "",
+                            "done": false
+                        },
+                        {
+                            "title": "Параметризация и маркеры",
+                            "description": "",
+                            "expectedResult": "",
+                            "done": false
+                        },
+                        {
+                            "title": "Ассерты и обработка исключений",
+                            "description": "",
+                            "expectedResult": "",
+                            "done": false
+                        },
+                        {
+                            "title": "DRY и паттерны проектирования",
+                            "description": "",
+                            "expectedResult": "",
+                            "done": false
+                        },
+                        {
+                            "title": "Работа с конфигурацией",
+                            "description": "",
+                            "expectedResult": "",
+                            "done": false
+                        },
+                        {
+                            "title": "Логирование и отчёты",
+                            "description": "",
+                            "expectedResult": "",
+                            "done": false
+                        }
+                    ],
+                    "priority": "medium"
+                }
+            ],
+            "totalDuration": 1,
+            "completedActivities": 0,
+            "overallProgress": 0
+        },
+        "внедрение_новых_технологий": {
+            "name": "Внедрение новых технологий",
+            "currentLevel": 0,
+            "targetLevel": 1,
+            "activities": [],
+            "totalDuration": 2,
+            "completedActivities": 0,
+            "overallProgress": 0
+        },
+        "проектирование_тест_дизайн": {
+            "name": "Проектирование (тест дизайн)",
+            "currentLevel": 0,
+            "targetLevel": 1,
+            "activities": [],
+            "totalDuration": 1,
+            "completedActivities": 0,
+            "overallProgress": 0
+        },
+        "скорость_написания_автотестов": {
+            "name": "Скорость написания автотестов",
+            "currentLevel": 0,
+            "targetLevel": 1,
+            "activities": [],
+            "totalDuration": 2,
+            "completedActivities": 0,
+            "overallProgress": 0
+        },
+        "качество_кода": {
+            "name": "Качество кода",
+            "currentLevel": 0,
+            "targetLevel": 1,
+            "activities": [],
+            "totalDuration": 2,
+            "completedActivities": 0,
+            "overallProgress": 0
+        },
+        "уровень_компетенции_сложность_задач": {
+            "name": "Уровень компетенции (сложность задач)",
+            "currentLevel": 0,
+            "targetLevel": 1,
+            "activities": [],
+            "totalDuration": 2,
+            "completedActivities": 0,
+            "overallProgress": 0
+        },
+        "использование_ai_для_aqa": {
+            "name": "Использование AI для AQA",
+            "currentLevel": 0,
+            "targetLevel": 2,
+            "activities": [],
+            "totalDuration": 4,
+            "completedActivities": 0,
+            "overallProgress": 0
+        },
+        "тестирование_производительности": {
+            "name": "Тестирование производительности",
+            "currentLevel": 0,
+            "targetLevel": 1,
+            "activities": [
+                {
+                    "id": "тестирование_производительности_1754667404670",
+                    "name": "Нефункциональное тестирование на Python",
+                    "level": 1,
+                    "duration": 1,
+                    "status": "planned",
+                    "completed": false,
+                    "comment": "",
+                    "relatedSkills": [
+                        "типы_автоматизированного_тестирования",
+                        "проектирование_тест_дизайн",
+                        "использование_ai_для_aqa",
+                        "владение_ide",
+                        "качество_кода",
+                        "уровень_компетенции_сложность_задач",
+                        "владение_языками_программирования"
+                    ],
+                    "description": "",
+                    "expectedResult": "",
+                    "subtasks": [
+                        {
+                            "title": "Написать пару нагрузочных тестов",
+                            "description": "Изучить теорию и попробовать на практике. Проект надо согласовать (либо не делать стресс-тесты, чтобы не положить ничего)\nНагрузочное тестирование: добавить Locust/k6 для оценки производительности и стресс-сценариев.\n\nПример можно глянуть тут:\n- https://wiki.surfstudio.ru/pages/viewpage.action?pageId=86263220\n- https://jira.surf.dev/browse/IKH-1641 (но тут js, но по смыслу я думаю все равно полезно будет посмотреть)\n\n_\nМожно использовать ИИ\n\nhttps://docs.pact.io/\nhttps://swagger.io/specification/\n\nhttps://www.zaproxy.org/docs/\nhttps://docs.locust.io/\nhttps://jmeter.apache.org/",
+                            "expectedResult": "Репозиторий с API-тестами, минимум по 2-5 тестов по каждому направлению",
+                            "done": false
+                        },
+                        {
+                            "title": "Решить задачу на Inkahran",
+                            "description": "Нагрузочное тестирование по требованиям: https://wiki.surfstudio.ru/pages/viewpage.action?pageId=98894725",
+                            "expectedResult": "Реализован ручной запуск проверки нагрузки, добавлен отчет",
+                            "done": false
+                        }
+                    ],
+                    "comments": [],
+                    "priority": "medium"
+                }
+            ],
+            "totalDuration": 1,
+            "completedActivities": 0,
+            "overallProgress": 0
+        },
+        "типы_автоматизированного_тестирования": {
+            "name": "Типы автоматизированного тестирования",
+            "currentLevel": 0,
+            "targetLevel": 1,
+            "activities": [
+                {
+                    "id": "типы_автоматизированного_тестирования_1754667261929",
+                    "name": "Изучить виды тестирования Backend",
+                    "level": 1,
+                    "duration": 1,
+                    "status": "planned",
+                    "completed": false,
+                    "comment": "",
+                    "relatedSkills": [
+                        "планирование_и_тестовая_пирамида_backend",
+                        "api_тестирование_backend",
+                        "тестирование_данных_и_схемы",
+                        "тестирование_ролевой_модели_и_авторизации"
+                    ],
+                    "description": "- https://wiki.surfstudio.ru/pages/viewpage.action?pageId=54407347\n- https://wiki.surfstudio.ru/pages/viewpage.action?pageId=9165423\n- https://wiki.surfstudio.ru/pages/viewpage.action?pageId=54398053\n- https://wiki.surfstudio.ru/pages/viewpage.action?pageId=54400942",
+                    "expectedResult": "Изучены все материалы и заданы вопросы\nПонадобится в задачах дальше, проверяется позже",
+                    "comments": [],
+                    "priority": "high"
+                }
+            ],
+            "totalDuration": 1,
+            "completedActivities": 0,
+            "overallProgress": 0
+        },
+        "планирование_и_тестовая_пирамида_backend": {
+            "name": "Планирование и тестовая пирамида Backend",
+            "currentLevel": 0,
+            "targetLevel": 0,
+            "activities": [],
+            "totalDuration": 0,
+            "completedActivities": 0,
+            "overallProgress": 0
+        },
+        "api_тестирование_backend": {
+            "name": "API тестирование Backend",
+            "currentLevel": 0,
+            "targetLevel": 0,
+            "activities": [],
+            "totalDuration": 0,
+            "completedActivities": 0,
+            "overallProgress": 0
+        },
+        "тестирование_данных_и_схемы": {
+            "name": "Тестирование данных и схемы",
+            "currentLevel": 0,
+            "targetLevel": 0,
+            "activities": [],
+            "totalDuration": 0,
+            "completedActivities": 0,
+            "overallProgress": 0
+        },
+        "тестирование_ролевой_модели_и_авторизации": {
+            "name": "Тестирование ролевой модели и авторизации",
+            "currentLevel": 0,
+            "targetLevel": 0,
+            "activities": [],
+            "totalDuration": 0,
+            "completedActivities": 0,
+            "overallProgress": 0
+        },
+        "автотесты_логирования_backend": {
+            "name": "Автотесты логирования Backend",
+            "currentLevel": 0,
+            "targetLevel": 1,
+            "activities": [],
+            "totalDuration": 2,
+            "completedActivities": 0,
+            "overallProgress": 0
+        },
+        "тестирование_производительности_backend": {
+            "name": "Тестирование производительности Backend",
+            "currentLevel": 0,
+            "targetLevel": 0,
+            "activities": [],
+            "totalDuration": 0,
+            "completedActivities": 0,
+            "overallProgress": 0
+        },
+        "масштаб_задач": {
+            "name": "Масштаб задач",
+            "currentLevel": 0,
+            "targetLevel": 1,
+            "activities": [
+                {
+                    "id": "масштаб_задач_1762928926754_2utxi",
+                    "name": "Автоматическое создание задач по плану в таблице в Jira",
+                    "description": "",
+                    "expectedResult": "",
+                    "priority": "urgent",
+                    "level": 1,
+                    "duration": 2,
+                    "status": "planned",
+                    "completed": false,
+                    "comment": "",
+                    "relatedSkills": [
+                        "разработка_плана_тестирования"
+                    ],
+                    "comments": [],
+                    "subtasks": [
+                        {
+                            "title": "Выработать формат шаблона для ведения плана",
+                            "description": "Взять существующие шаблоны или разработать новый, чтобы при создании задачи в Jira заполнялись нужные поля\n- название\n- описание\n- время\n- может что-то еще? наши параметры для задач",
+                            "expectedResult": "Создан шаблон для заполнения, который в дальнейшем будет отправляться в Jira в виде задач",
+                            "done": false
+                        },
+                        {
+                            "title": "Написать скрипт, для отправки задач в Jira",
+                            "description": "Тренироваться можно на проекте SURFQA\n- Вероятно это скрипт внутри Google-таблиц, но можно и другое решение продумать\n- Связь с Jira как реализована можно посмотреть тут: https://docs.google.com/spreadsheets/d/1RNTflqJGZ3sJNxy9koQarEbZXtqXliJrf7kbe1Af8oY/edit?gid=653131460#gid=653131460 или тут: https://wiki.surfstudio.ru/pages/viewpage.action?pageId=54411023",
+                            "expectedResult": "Создан инструмент, который формирует из плана тестирования в гугл-документах задачи в Jira в верном формате, в нужный спринт/эпик и тп",
+                            "done": false
+                        }
+                    ]
+                }
+            ],
+            "totalDuration": 2,
+            "completedActivities": 0,
+            "overallProgress": 0
+        },
+        "разработка_плана_тестирования": {
+            "name": "Разработка плана тестирования",
+            "currentLevel": 0,
+            "targetLevel": 0,
+            "activities": [],
+            "totalDuration": 0,
+            "completedActivities": 0,
+            "overallProgress": 0
+        }
+    },
+    "ui": {
+        "cloudRecordId": "325c17b6-5163-4602-96ce-56e5beb5fe04",
+        "preferredPlanAnalysisSkill": "Владение языками программирования",
+        "inlineCloudCollapsed": false,
+        "cloudPlanTitle": "Савина Наталья - Q4_25-Q1_26",
+        "collapsedSkills": {
+            "внедрение_новых_технологий": false
+        },
+        "theme": "light",
+        "preferredAnalysisSkill": "Функциональное тестирование"
+    },
+    "sortSettings": {
+        "by": "priority",
+        "direction": "desc",
+        "crossSkills": true
+    },
+    "title": "Савина Наталья - Q4_25-Q1_26",
+    "nameidp": "Савина Наталья - Q4_25-Q1_26"
+}
