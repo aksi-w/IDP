@@ -1,8 +1,37 @@
+# -*- coding: utf-8 -*-
 import json
 import csv
 from sqlalchemy import func
 from backend.database import SessionLocal, init_db
 from backend.models import TaskTemplate
+
+# Функция нормализации названий категорий
+def normalize_category(category):
+    """Нормализует название категории: убирает подчеркивания, префиксы и приводит к единому виду"""
+    if not category:
+        return "Без категории"
+    
+    # Убираем префиксы типа "AQA._"
+    category = category.replace("AQA._", "AQA. ")
+    
+    # Заменяем подчеркивания на пробелы
+    category = category.replace("_", " ")
+    
+    # Убираем лишние пробелы
+    category = " ".join(category.split())
+    
+    # Маппинг для объединения похожих категорий
+    category_mapping = {
+        "AQA. Алгоритм работы с фичами": "Алгоритмы работы с фичами",
+        "AQA. Инструменты и технологии": "AQA. Инструменты и технологии",
+        "AQA. Лидерские навыки": "AQA. Лидерские навыки",
+        "AQA. Технические навыки": "AQA. Технические навыки",
+        "Алгоритм работы с фичами": "Алгоритмы работы с фичами",
+        "Артефакты тестирования": "Артефакты тестирования",
+        "Виды тестирования": "Виды тестирования",
+    }
+    
+    return category_mapping.get(category, category)
 
 def load_kb_tasks():
     print("📥 Загрузка задач из kb_tasks.json...")
@@ -15,8 +44,10 @@ def load_kb_tasks():
         count = 0
         for i, task in enumerate(tasks):
             try:
+                normalized_category = normalize_category(task.get('category', ''))
+                
                 existing = db.query(TaskTemplate).filter(
-                    TaskTemplate.category == task.get('category', ''),
+                    TaskTemplate.category == normalized_category,
                     TaskTemplate.skill_name == task.get('skillName', ''),
                     TaskTemplate.level == task.get('level'),
                     TaskTemplate.source == 'kb_tasks'
@@ -25,8 +56,11 @@ def load_kb_tasks():
                 if existing:
                     continue
                 
+                # Нормализуем категорию
+                normalized_category = normalize_category(task.get('category', 'Без категории'))
+                
                 template = TaskTemplate(
-                    category=task.get('category', 'Без категории'),
+                    category=normalized_category,
                     skill_name=task.get('skillName', 'Без названия'),
                     level=task.get('level'),
                     goal=task.get('goal'),
@@ -79,8 +113,10 @@ def load_hardskills():
                     if not description:
                         continue
                     
+                    normalized_category = normalize_category(current_category)
+                    
                     existing = db.query(TaskTemplate).filter(
-                        TaskTemplate.category == current_category,
+                        TaskTemplate.category == normalized_category,
                         TaskTemplate.skill_name == skill,
                         TaskTemplate.level == level,
                         TaskTemplate.source == 'hardskills'
@@ -89,8 +125,11 @@ def load_hardskills():
                     if existing:
                         continue
                     
+                    # Нормализуем категорию для hardskills тоже
+                    normalized_category = normalize_category(current_category)
+                    
                     template = TaskTemplate(
-                        category=current_category,
+                        category=normalized_category,
                         skill_name=skill,
                         level=level,
                         goal=f"Достичь уровня {level} по навыку '{skill}'",
