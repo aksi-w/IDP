@@ -1,11 +1,12 @@
-from pydantic import BaseModel, EmailStr
+# -*- coding: utf-8 -*-
+from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime
 from backend.models import UserRole, TaskStatus, IDPStatus
 
 class UserBase(BaseModel):
     full_name: str
-    email: Optional[EmailStr] = None
+    email: Optional[str] = None
     role: UserRole
 
 class UserCreate(UserBase):

@@ -1,12 +1,41 @@
+# -*- coding: utf-8 -*-
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 import uvicorn
+import json
 
 from backend.database import init_db
 from backend.routes import auth_routes, idp_routes, task_routes, logout_route, template_routes, comment_routes, user_routes
+
+# Исправление JSON encoder для правильной кодировки кириллицы
+from fastapi.encoders import jsonable_encoder as original_jsonable_encoder
+
+def utf8_jsonable_encoder(obj, **kwargs):
+    result = original_jsonable_encoder(obj, **kwargs)
+    if isinstance(result, (dict, list)):
+        return json.loads(json.dumps(result, ensure_ascii=False))
+    return result
+
+import fastapi.encoders
+fastapi.encoders.jsonable_encoder = utf8_jsonable_encoder
+
+# Middleware для установки charset=utf-8 в заголовках
+class UTF8Middleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+        if response.headers.get("content-type"):
+            content_type = response.headers["content-type"]
+            if "application/json" in content_type and "charset" not in content_type:
+                response.headers["content-type"] = "application/json; charset=utf-8"
+            elif "text/html" in content_type and "charset" not in content_type:
+                response.headers["content-type"] = "text/html; charset=utf-8"
+            elif "text/plain" in content_type and "charset" not in content_type:
+                response.headers["content-type"] = "text/plain; charset=utf-8"
+        return response
 
 app = FastAPI(
     title="ИПР - Индивидуальные планы развития",
@@ -14,6 +43,7 @@ app = FastAPI(
     version="1.0.0"
 )
 
+app.add_middleware(UTF8Middleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
