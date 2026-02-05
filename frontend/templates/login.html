@@ -50,11 +50,17 @@
                                         <button type="submit" class="btn btn-primary w-100 mb-3">
                                             Войти как ментор
                                         </button>
-                                        <div class="text-center">
+                                        <div class="text-center mb-2">
                                             <small class="text-muted">Нет аккаунта?</small>
                                             <button type="button" class="btn btn-link p-0" 
                                                     data-bs-toggle="modal" data-bs-target="#registerModal">
                                                 Зарегистрироваться
+                                            </button>
+                                        </div>
+                                        <div class="text-center">
+                                            <button type="button" class="btn btn-link p-0 text-muted" 
+                                                    data-bs-toggle="modal" data-bs-target="#resetPasswordModal">
+                                                Забыли пароль?
                                             </button>
                                         </div>
                                     </form>
@@ -123,6 +129,46 @@
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary">
                                 Зарегистрироваться
+                            </button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                Отмена
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно сброса пароля -->
+    <div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-labelledby="resetPasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="resetPasswordModalLabel">Сброс пароля</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="resetPasswordForm">
+                        <div class="mb-3">
+                            <label for="resetEmail" class="form-label">Email *</label>
+                            <input type="email" class="form-control" id="resetEmail" 
+                                   placeholder="mentor@example.com" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="resetNewPassword" class="form-label">Новый пароль *</label>
+                            <input type="password" class="form-control" id="resetNewPassword" 
+                                   placeholder="••••••••" required>
+                            <small class="text-muted">Минимум 6 символов</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="resetConfirmPassword" class="form-label">Повторите пароль *</label>
+                            <input type="password" class="form-control" id="resetConfirmPassword" 
+                                   placeholder="••••••••" required>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                Сбросить пароль
                             </button>
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                                 Отмена
@@ -321,10 +367,88 @@
             }
         });
 
+        // Сброс пароля
+        document.getElementById('resetPasswordForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Очистка предыдущих ошибок
+            clearAllErrors('resetPasswordForm');
+            
+            const email = document.getElementById('resetEmail').value.trim();
+            const newPassword = document.getElementById('resetNewPassword').value;
+            const confirmPassword = document.getElementById('resetConfirmPassword').value;
+            
+            let hasErrors = false;
+            
+            // Валидация email
+            if (!validateRequired(email)) {
+                showFieldError('resetEmail', 'Email обязателен');
+                hasErrors = true;
+            } else if (!validateEmail(email)) {
+                showFieldError('resetEmail', 'Введите корректный email');
+                hasErrors = true;
+            } else {
+                showFieldSuccess('resetEmail');
+            }
+            
+            // Валидация нового пароля
+            if (!validateRequired(newPassword)) {
+                showFieldError('resetNewPassword', 'Новый пароль обязателен');
+                hasErrors = true;
+            } else if (!validatePassword(newPassword)) {
+                showFieldError('resetNewPassword', 'Минимум 6 символов');
+                hasErrors = true;
+            } else {
+                showFieldSuccess('resetNewPassword');
+            }
+            
+            // Валидация подтверждения пароля
+            if (!validateRequired(confirmPassword)) {
+                showFieldError('resetConfirmPassword', 'Повторите пароль');
+                hasErrors = true;
+            } else if (newPassword !== confirmPassword) {
+                showFieldError('resetConfirmPassword', 'Пароли не совпадают');
+                hasErrors = true;
+            } else {
+                showFieldSuccess('resetConfirmPassword');
+            }
+            
+            if (hasErrors) return;
+            
+            try {
+                // Отправляем запрос на сброс пароля
+                await apiRequest(`/auth/reset-password?email=${encodeURIComponent(email)}&new_password=${encodeURIComponent(newPassword)}`, {
+                    method: 'PATCH',
+                    skipAuthRedirect: true
+                });
+                
+                // Закрываем модальное окно
+                const modal = bootstrap.Modal.getInstance(document.getElementById('resetPasswordModal'));
+                modal.hide();
+                
+                // Показываем успешное сообщение
+                showSuccess('Пароль успешно изменен! Войдите с новым паролем.');
+                
+                // Очищаем форму
+                document.getElementById('resetPasswordForm').reset();
+                clearAllErrors('resetPasswordForm');
+                
+                // Заполняем email в форме входа
+                document.getElementById('mentorEmail').value = email;
+                document.getElementById('mentorPassword').focus();
+            } catch (error) {
+                if (error.message && error.message.includes('не найден')) {
+                    showFieldError('resetEmail', 'Пользователь не найден');
+                }
+                showError(error);
+            }
+        });
+
         // Добавляем автоочистку ошибок при вводе
         addInputValidationListeners('mentorLoginForm');
         addInputValidationListeners('menteeLoginForm');
         addInputValidationListeners('registerForm');
+        addInputValidationListeners('resetPasswordForm');
         
         // Если уже авторизован, перенаправить
         if (getToken()) {

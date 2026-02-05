@@ -81,3 +81,27 @@ def register_mentor(
     
     return UserResponse.from_orm(mentor)
 
+@router.patch("/reset-password")
+def reset_password(
+    email: str,
+    new_password: str,
+    db: Session = Depends(get_db)
+):
+    """Сброс пароля для ментора"""
+    user = db.query(User).filter(
+        User.email == email,
+        User.role == UserRole.MENTOR
+    ).first()
+    
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Пользователь с таким email не найден"
+        )
+    
+    # Обновляем пароль
+    user.password_hash = hash_password(new_password)
+    db.commit()
+    
+    return {"message": "Пароль успешно изменен"}
+
