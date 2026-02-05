@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Канбан доска - ИПР</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/static/style.css?v=16">
+    <link rel="stylesheet" href="/static/style.css?v=22">
     <style>
         .task-card {
             cursor: grab;
@@ -33,7 +33,7 @@
             pointer-events: auto; /* Но карточки кликабельны */
         }
         .comment-item {
-            padding: 10px;
+            padding: 12px;
             margin-bottom: 10px;
             background-color: #f8f9fa;
             border-radius: 6px;
@@ -46,6 +46,69 @@
         .comment-time {
             font-size: 0.75rem;
             color: var(--text-muted);
+            margin-right: 8px;
+        }
+        .comment-actions {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .comment-actions .btn-link {
+            text-decoration: none;
+            font-size: 1.1rem;
+            line-height: 1;
+            transition: transform 0.2s;
+        }
+        .comment-actions .btn-link:hover {
+            transform: scale(1.2);
+        }
+        .comment-item textarea {
+            font-size: 0.9rem;
+        }
+        
+        /* Красивый стиль для select навыка */
+        #taskSkillSelect {
+            font-size: 0.9rem;
+            overflow-y: auto;
+            cursor: pointer;
+        }
+        #taskSkillSelect optgroup {
+            font-weight: 700;
+            font-style: normal;
+            color: #212529;
+            background-color: #e9ecef;
+            padding: 6px 8px;
+            margin-top: 4px;
+            font-size: 0.85rem;
+            text-transform: none;
+        }
+        #taskSkillSelect option {
+            padding: 6px 12px;
+            font-size: 0.9rem;
+            background-color: white;
+            color: #495057;
+        }
+        #taskSkillSelect option:hover,
+        #taskSkillSelect option:focus {
+            background-color: #e7f1ff;
+        }
+        #taskSkillSearch {
+            font-size: 0.9rem;
+        }
+        
+        /* Стили для чеклиста */
+        .form-check-input {
+            cursor: pointer;
+            width: 1.2em;
+            height: 1.2em;
+        }
+        .form-check-label {
+            cursor: pointer;
+            font-size: 0.95rem;
+            user-select: none;
+        }
+        .form-check-label.text-decoration-line-through {
+            opacity: 0.6;
         }
         .linked-skill-badge {
             display: inline-block;
@@ -91,7 +154,7 @@
                 <p class="text-muted" id="idpInfo">Загрузка...</p>
             </div>
             <div>
-                <button class="btn btn-primary" id="addTaskBtn" data-bs-toggle="modal" data-bs-target="#createTaskModal" style="display: none;">
+                <button class="btn btn-primary" id="addTaskBtn" data-bs-toggle="modal" data-bs-target="#createTaskModal" onclick="prepareCreateTaskModal()" style="display: none;">
                     + Добавить задачу
                 </button>
                 <button class="btn btn-secondary" id="closeIdpBtn" onclick="closeIDP()" style="display: none;">
@@ -166,18 +229,37 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Создать задачу</h5>
+                    <h5 class="modal-title">Добавить новую задачу</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="createTaskForm">
                         <div class="mb-3">
                             <label for="taskTitle" class="form-label">Название задачи *</label>
-                            <input type="text" class="form-control" id="taskTitle" required>
+                            <input type="text" class="form-control" id="taskTitle" required 
+                                   placeholder="Введите название задачи">
                         </div>
                         <div class="mb-3">
                             <label for="taskDescription" class="form-label">Описание</label>
-                            <textarea class="form-control" id="taskDescription" rows="5"></textarea>
+                            <textarea class="form-control" id="taskDescription" rows="3"
+                                      placeholder="Опишите что нужно сделать..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="taskGoal" class="form-label">Плановый результат</label>
+                            <textarea class="form-control" id="taskGoal" rows="2"
+                                      placeholder="Какой результат ожидается..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="taskSkillSearch" class="form-label">Навык *</label>
+                            <input type="text" class="form-control mb-2" id="taskSkillSearch" 
+                                   placeholder="🔍 Поиск навыка..." 
+                                   onkeyup="filterSkills()">
+                            <select class="form-select" id="taskSkillSelect" required size="8" 
+                                    style="min-height: 200px; max-height: 300px;">
+                                <option value="">Загрузка навыков...</option>
+                                <!-- Заполняется динамически -->
+                            </select>
+                            <small class="text-muted">Выберите навык из списка или используйте поиск</small>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
@@ -221,7 +303,7 @@
                     
                     <!-- Добавить комментарий -->
                     <div class="mt-3">
-                        <textarea class="form-control" id="newComment" rows="2" placeholder="Написать комментарий..."></textarea>
+                        <textarea class="form-control" id="newComment" rows="2" placeholder="Написать комментарий..." onkeydown="handleCommentKeydown(event)"></textarea>
                         <button class="btn btn-sm btn-primary mt-2" onclick="addComment()">Отправить</button>
                     </div>
                 </div>
@@ -234,7 +316,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script src="/static/app.js?v=29"></script>
+    <script src="/static/app.js?v=37"></script>
     <script>
         const idpId = {{ idp_id }};
         let currentTaskId = null;
@@ -288,19 +370,40 @@
             // Счетчики
             let todoCount = 0, inProgressCount = 0, doneCount = 0;
 
-            tasks.forEach(task => {
-                const taskCard = createTaskCard(task);
-                
-                if (task.status === 'todo') {
-                    todoContainer.appendChild(taskCard);
-                    todoCount++;
-                } else if (task.status === 'in_progress') {
-                    inProgressContainer.appendChild(taskCard);
-                    inProgressCount++;
-                } else if (task.status === 'done') {
-                    doneContainer.appendChild(taskCard);
-                    doneCount++;
+            // Сортируем TODO задачи по приоритету
+            const priorityOrder = {'high': 0, 'medium': 1, 'low': 2};
+            const todoTasks = tasks.filter(t => t.status === 'todo').sort((a, b) => {
+                const aPriority = priorityOrder[a.priority] ?? 3;
+                const bPriority = priorityOrder[b.priority] ?? 3;
+                if (aPriority !== bPriority) {
+                    return aPriority - bPriority;
                 }
+                return new Date(a.created_at) - new Date(b.created_at);
+            });
+
+            // Остальные задачи остаются в порядке получения (по дате создания)
+            const inProgressTasks = tasks.filter(t => t.status === 'in_progress');
+            const doneTasks = tasks.filter(t => t.status === 'done');
+
+            // Отображаем TODO задачи (с сортировкой по приоритету)
+            todoTasks.forEach(task => {
+                const taskCard = createTaskCard(task);
+                todoContainer.appendChild(taskCard);
+                todoCount++;
+            });
+
+            // Отображаем IN_PROGRESS задачи (без сортировки по приоритету)
+            inProgressTasks.forEach(task => {
+                const taskCard = createTaskCard(task);
+                inProgressContainer.appendChild(taskCard);
+                inProgressCount++;
+            });
+
+            // Отображаем DONE задачи (без сортировки по приоритету)
+            doneTasks.forEach(task => {
+                const taskCard = createTaskCard(task);
+                doneContainer.appendChild(taskCard);
+                doneCount++;
             });
 
             // Обновление счетчиков
@@ -464,6 +567,7 @@
                     return false;
                 }
                 
+                // Меняем статус - обновляем на сервере
                 try {
                     console.log('[DEBUG] Sending PATCH request to /tasks/' + taskId);
                     const response = await apiRequest(`/tasks/${taskId}`, {
@@ -482,33 +586,298 @@
                     await loadKanban();
                 }
             }
-
+            
             return false;
         }
 
+        let allSkillsCache = null;
+
+        // Подготовка модального окна создания задачи
+        async function prepareCreateTaskModal() {
+            const selectElement = document.getElementById('taskSkillSelect');
+            const searchInput = document.getElementById('taskSkillSearch');
+            
+            // Сбрасываем поиск
+            searchInput.value = '';
+            
+            try {
+                // Если уже загружали - используем кэш
+                if (allSkillsCache) {
+                    fillSkillsSelect(allSkillsCache);
+                    filterSkills(); // Сбрасываем фильтр
+                    return;
+                }
+                
+                selectElement.innerHTML = '<option value="">Загрузка навыков...</option>';
+                selectElement.disabled = true;
+                
+                // Загружаем все категории
+                const categories = await apiRequest('/templates/categories');
+                
+                // Загружаем навыки из всех категорий
+                const allSkills = new Set();
+                const skillsDetails = {};
+                
+                for (const cat of categories) {
+                    const templates = await apiRequest(`/templates/by-category/${encodeURIComponent(cat.category)}`);
+                    
+                    templates.forEach(t => {
+                        const skillName = t.skill_name;
+                        allSkills.add(skillName);
+                        
+                        // Сохраняем информацию о навыке
+                        if (!skillsDetails[skillName]) {
+                            skillsDetails[skillName] = {
+                                skill: skillName,
+                                category: t.category
+                            };
+                        }
+                    });
+                }
+                
+                allSkillsCache = { 
+                    skills: Array.from(allSkills).sort(), 
+                    details: skillsDetails 
+                };
+                
+                fillSkillsSelect(allSkillsCache);
+                
+            } catch (error) {
+                console.error('Ошибка загрузки навыков:', error);
+                selectElement.innerHTML = '<option value="">Ошибка загрузки навыков</option>';
+                showError(error);
+            }
+        }
+        
+        function fillSkillsSelect(cache) {
+            const selectElement = document.getElementById('taskSkillSelect');
+            
+            selectElement.innerHTML = '';
+            
+            // Группируем навыки по категориям
+            const skillsByCategory = {};
+            
+            cache.skills.forEach(skill => {
+                const category = cache.details[skill]?.category || 'Без категории';
+                if (!skillsByCategory[category]) {
+                    skillsByCategory[category] = [];
+                }
+                skillsByCategory[category].push(skill);
+            });
+            
+            // Сортируем категории и добавляем optgroup для каждой
+            Object.keys(skillsByCategory).sort().forEach(category => {
+                const optgroup = document.createElement('optgroup');
+                
+                // Форматируем название категории (убираем подчеркивания)
+                const formattedCategory = category.replace(/_/g, ' ');
+                optgroup.label = formattedCategory;
+                optgroup.dataset.category = category;
+                
+                // Сортируем и добавляем навыки внутри категории
+                skillsByCategory[category].sort().forEach(skill => {
+                    const option = document.createElement('option');
+                    option.value = skill;
+                    option.textContent = skill;
+                    option.dataset.category = category;
+                    option.dataset.skillName = skill.toLowerCase();
+                    optgroup.appendChild(option);
+                });
+                
+                selectElement.appendChild(optgroup);
+            });
+            
+            selectElement.disabled = false;
+        }
+        
+        // Фильтрация навыков по поиску
+        function filterSkills() {
+            const searchQuery = document.getElementById('taskSkillSearch').value.toLowerCase();
+            const selectElement = document.getElementById('taskSkillSelect');
+            const optgroups = selectElement.querySelectorAll('optgroup');
+            
+            if (!searchQuery) {
+                // Показываем все
+                optgroups.forEach(optgroup => {
+                    optgroup.style.display = '';
+                    const options = optgroup.querySelectorAll('option');
+                    options.forEach(opt => opt.style.display = '');
+                });
+                return;
+            }
+            
+            // Фильтруем
+            optgroups.forEach(optgroup => {
+                const options = optgroup.querySelectorAll('option');
+                let hasVisibleOptions = false;
+                
+                options.forEach(opt => {
+                    const skillName = opt.dataset.skillName || opt.textContent.toLowerCase();
+                    if (skillName.includes(searchQuery)) {
+                        opt.style.display = '';
+                        hasVisibleOptions = true;
+                    } else {
+                        opt.style.display = 'none';
+                    }
+                });
+                
+                // Скрываем категорию если в ней нет подходящих навыков
+                optgroup.style.display = hasVisibleOptions ? '' : 'none';
+            });
+        }
+
         async function createTask() {
-            const title = document.getElementById('taskTitle').value;
-            const description = document.getElementById('taskDescription').value;
+            const title = document.getElementById('taskTitle').value.trim();
+            const description = document.getElementById('taskDescription').value.trim();
+            const goal = document.getElementById('taskGoal').value.trim();
+            const skillName = document.getElementById('taskSkillSelect').value;
             const priority = document.getElementById('taskPriority').value;
             const deadline = document.getElementById('taskDeadline').value;
 
+            // Валидация
+            if (!title) {
+                showError({ message: 'Название задачи обязательно' });
+                return;
+            }
+            
+            if (!skillName) {
+                showError({ message: 'Навык обязателен для привязки' });
+                return;
+            }
+
             try {
+                // Формируем полное описание
+                let fullDescription = '';
+                
+                if (description) {
+                    fullDescription += description;
+                }
+                
+                // Добавляем плановый результат
+                if (goal) {
+                    fullDescription += fullDescription ? `\n\nПлановый результат:\n${goal}` : `Плановый результат:\n${goal}`;
+                }
+
+                // Создаем объект linked_skills
+                const linkedSkills = {
+                    skill: skillName,
+                    category: allSkillsCache?.details[skillName]?.category || 'Без категории',
+                    level: null
+                };
+
                 await apiRequest('/tasks/', {
                     method: 'POST',
                     body: JSON.stringify({
                         idp_id: idpId,
-                        title,
-                        description,
+                        title: title,
+                        description: fullDescription,
                         priority,
                         deadline: deadline || null,
-                        status: 'todo'
+                        status: 'todo',
+                        linked_skills: linkedSkills
                     })
                 });
 
                 bootstrap.Modal.getInstance(document.getElementById('createTaskModal')).hide();
                 document.getElementById('createTaskForm').reset();
+                
+                // Сбрасываем select и поиск
+                document.getElementById('taskSkillSelect').value = '';
+                document.getElementById('taskSkillSearch').value = '';
+                filterSkills(); // Сбрасываем фильтр
+                
+                showSuccess('Задача успешно создана');
                 loadKanban();
             } catch (error) {
+                showError(error);
+            }
+        }
+
+        // Парсинг описания с чекбоксами
+        function parseDescriptionWithChecklists(description, checklistState) {
+            if (!description) return 'Нет описания';
+            
+            const lines = description.split('\n');
+            let html = '';
+            let itemIndex = 0;
+            
+            lines.forEach(line => {
+                // Проверяем, является ли строка элементом списка
+                const listMatch = line.match(/^[\s]*([-•*])\s+(.+)$/);
+                
+                if (listMatch) {
+                    const itemText = listMatch[2];
+                    const isChecked = checklistState && checklistState[itemIndex] === true;
+                    
+                    html += `
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" 
+                                   id="checklist-${itemIndex}" 
+                                   data-index="${itemIndex}"
+                                   ${isChecked ? 'checked' : ''}
+                                   onchange="toggleChecklistItem(${itemIndex})">
+                            <label class="form-check-label ${isChecked ? 'text-decoration-line-through text-muted' : ''}" 
+                                   for="checklist-${itemIndex}" 
+                                   id="checklist-label-${itemIndex}">
+                                ${itemText}
+                            </label>
+                        </div>
+                    `;
+                    itemIndex++;
+                } else {
+                    // Обычная строка - просто текст
+                    if (line.trim()) {
+                        html += `<p class="mb-2">${line}</p>`;
+                    } else {
+                        html += '<br>';
+                    }
+                }
+            });
+            
+            return html;
+        }
+
+        // Переключение состояния чекбокса
+        async function toggleChecklistItem(index) {
+            const task = tasks.find(t => t.id === currentTaskId);
+            if (!task) return;
+            
+            // Получаем текущее состояние из задачи
+            const checklistState = task.checklist_state || {};
+            
+            // Переключаем состояние
+            const checkbox = document.getElementById(`checklist-${index}`);
+            const label = document.getElementById(`checklist-label-${index}`);
+            
+            checklistState[index] = checkbox.checked;
+            
+            // Обновляем стиль метки
+            if (checkbox.checked) {
+                label.classList.add('text-decoration-line-through', 'text-muted');
+            } else {
+                label.classList.remove('text-decoration-line-through', 'text-muted');
+            }
+            
+            // Сохраняем на сервере
+            try {
+                await apiRequest(`/tasks/${currentTaskId}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ checklist_state: checklistState })
+                });
+                
+                // Обновляем локальный объект задачи
+                task.checklist_state = checklistState;
+                
+                console.log('[CHECKLIST] Состояние сохранено на сервере:', checklistState);
+            } catch (error) {
+                console.error('[CHECKLIST] Ошибка сохранения:', error);
+                // Откатываем чекбокс
+                checkbox.checked = !checkbox.checked;
+                if (checkbox.checked) {
+                    label.classList.add('text-decoration-line-through', 'text-muted');
+                } else {
+                    label.classList.remove('text-decoration-line-through', 'text-muted');
+                }
                 showError(error);
             }
         }
@@ -519,10 +888,8 @@
             
             document.getElementById('viewTaskTitle').textContent = task.title;
             
-            // Форматируем описание (переносы строк)
-            const formattedDesc = task.description ? 
-                task.description.replace(/\n/g, '<br>').replace(/- /g, '<br>• ') : 
-                'Нет описания';
+            // Парсим описание с чекбоксами (состояние из БД)
+            const formattedDesc = parseDescriptionWithChecklists(task.description, task.checklist_state);
             
             // Форматируем навыки
             let skillsHtml = '';
@@ -540,7 +907,7 @@
             document.getElementById('viewTaskBody').innerHTML = `
                 <div class="mb-3">
                     <h6>Описание:</h6>
-                    <p style="white-space: pre-wrap;">${formattedDesc}</p>
+                    <div>${formattedDesc}</div>
                 </div>
                 <div class="mb-3">
                     <h6>Приоритет:</h6>
@@ -568,21 +935,164 @@
                 const comments = await apiRequest(`/comments/task/${taskId}`);
                 const container = document.getElementById('commentsContainer');
                 
+                // Получаем текущего пользователя
+                const currentUser = getUser();
+                
                 if (comments.length === 0) {
                     container.innerHTML = '<p class="text-muted">Комментариев пока нет</p>';
                 } else {
-                    container.innerHTML = comments.map(c => `
-                        <div class="comment-item">
-                            <div class="d-flex justify-content-between">
-                                <span class="comment-author">${c.user_name}</span>
-                                <span class="comment-time">${formatDate(c.created_at)}</span>
+                    container.innerHTML = comments.map(c => {
+                        // Показываем кнопки редактирования/удаления только для автора
+                        const isAuthor = currentUser && c.user_id === currentUser.id;
+                        const viewActions = isAuthor ? `
+                            <div class="comment-actions" id="comment-actions-view-${c.id}">
+                                <button class="btn btn-sm btn-link text-secondary p-0 me-2" onclick="editComment(${c.id}, '${c.comment.replace(/'/g, "\\'")}');" title="Редактировать">
+                                    ✏️
+                                </button>
+                                <button class="btn btn-sm btn-link text-danger p-0" onclick="deleteComment(${c.id})" title="Удалить">
+                                    🗑️
+                                </button>
                             </div>
-                            <p class="mb-0 mt-1">${c.comment}</p>
-                        </div>
-                    `).join('');
+                        ` : '';
+                        const editActions = isAuthor ? `
+                            <div class="comment-actions d-none" id="comment-actions-edit-${c.id}">
+                                <button class="btn btn-sm btn-link text-success p-0 me-2" onclick="saveEditComment(${c.id})" title="Сохранить (Enter)">
+                                    ✅
+                                </button>
+                                <button class="btn btn-sm btn-link text-secondary p-0" onclick="cancelEditComment(${c.id})" title="Отмена (Esc)">
+                                    ❌
+                                </button>
+                            </div>
+                        ` : '';
+                        
+                        return `
+                            <div class="comment-item" id="comment-${c.id}">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="comment-author">${c.user_name}</span>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="comment-time">${formatDate(c.created_at)}</span>
+                                                ${viewActions}
+                                                ${editActions}
+                                            </div>
+                                        </div>
+                                        <p class="mb-0 mt-1" id="comment-text-${c.id}">${c.comment}</p>
+                                        <textarea class="form-control mt-1 d-none" id="comment-edit-${c.id}" rows="2" onkeydown="handleEditCommentKeydown(event, ${c.id})">${c.comment}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
                 }
             } catch (error) {
                 console.error('Ошибка загрузки комментариев:', error);
+            }
+        }
+        
+        let editingCommentId = null;
+
+        function editComment(commentId, commentText) {
+            // Если уже редактируем другой комментарий - отменяем
+            if (editingCommentId && editingCommentId !== commentId) {
+                cancelEditComment(editingCommentId);
+            }
+            
+            editingCommentId = commentId;
+            
+            // Скрываем текст, показываем textarea
+            document.getElementById(`comment-text-${commentId}`).classList.add('d-none');
+            document.getElementById(`comment-edit-${commentId}`).classList.remove('d-none');
+            
+            // Переключаем кнопки
+            const viewActions = document.getElementById(`comment-actions-view-${commentId}`);
+            const editActions = document.getElementById(`comment-actions-edit-${commentId}`);
+            if (viewActions) viewActions.classList.add('d-none');
+            if (editActions) editActions.classList.remove('d-none');
+            
+            // Фокусируемся на textarea
+            document.getElementById(`comment-edit-${commentId}`).focus();
+        }
+
+        function cancelEditComment(commentId) {
+            // Показываем текст, скрываем textarea
+            document.getElementById(`comment-text-${commentId}`).classList.remove('d-none');
+            document.getElementById(`comment-edit-${commentId}`).classList.add('d-none');
+            
+            // Переключаем кнопки обратно
+            const viewActions = document.getElementById(`comment-actions-view-${commentId}`);
+            const editActions = document.getElementById(`comment-actions-edit-${commentId}`);
+            if (viewActions) viewActions.classList.remove('d-none');
+            if (editActions) editActions.classList.add('d-none');
+            
+            editingCommentId = null;
+        }
+
+        async function saveEditComment(commentId) {
+            const newText = document.getElementById(`comment-edit-${commentId}`).value.trim();
+            
+            if (!newText) {
+                showError({ message: 'Комментарий не может быть пустым' });
+                return;
+            }
+            
+            try {
+                await apiRequest(`/comments/${commentId}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ comment: newText })
+                });
+                
+                editingCommentId = null;
+                await loadComments(currentTaskId);
+                showSuccess('Комментарий обновлен');
+            } catch (error) {
+                showError(error);
+            }
+        }
+
+        async function deleteComment(commentId) {
+            const confirmed = await showConfirm(
+                'Удалить комментарий',
+                'Вы уверены, что хотите удалить этот комментарий?',
+                {
+                    confirmText: 'Да, удалить',
+                    cancelText: 'Отмена',
+                    confirmClass: 'btn-danger'
+                }
+            );
+            
+            if (!confirmed) return;
+            
+            try {
+                await apiRequest(`/comments/${commentId}`, {
+                    method: 'DELETE'
+                });
+                
+                await loadComments(currentTaskId);
+                showSuccess('Комментарий удален');
+            } catch (error) {
+                showError(error);
+            }
+        }
+
+        function handleCommentKeydown(event) {
+            // Отправка по Enter (без Shift)
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                addComment();
+            }
+        }
+
+        function handleEditCommentKeydown(event, commentId) {
+            // Сохранение по Enter (без Shift)
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                saveEditComment(commentId);
+            }
+            // Отмена по Escape
+            if (event.key === 'Escape') {
+                event.preventDefault();
+                cancelEditComment(commentId);
             }
         }
 

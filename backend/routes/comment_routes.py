@@ -100,12 +100,54 @@ def get_task_comments(
     
     return result
 
+class CommentUpdate(BaseModel):
+    comment: str
+
+@router.patch("/{comment_id}", response_model=CommentResponse)
+def update_comment(
+    comment_id: int,
+    comment_data: CommentUpdate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Редактировать комментарий (только автор)"""
+    comment = db.query(TaskComment).filter(TaskComment.id == comment_id).first()
+    if not comment:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Комментарий не найден"
+        )
+    
+    if comment.user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Вы можете редактировать только свои комментарии"
+        )
+    
+    # Обновляем текст комментария
+    comment.comment = comment_data.comment
+    db.commit()
+    db.refresh(comment)
+    
+    # Получаем имя пользователя для ответа
+    user = db.query(User).filter(User.id == comment.user_id).first()
+    
+    return CommentResponse(
+        id=comment.id,
+        task_id=comment.task_id,
+        user_id=comment.user_id,
+        comment=comment.comment,
+        created_at=comment.created_at,
+        user_name=user.full_name if user else "Неизвестно"
+    )
+
 @router.delete("/{comment_id}")
 def delete_comment(
     comment_id: int,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    """Удалить комментарий (только автор)"""
     comment = db.query(TaskComment).filter(TaskComment.id == comment_id).first()
     if not comment:
         raise HTTPException(

@@ -5,31 +5,67 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Создать ИПР - ИПР</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/static/style.css?v=16">
+    <link rel="stylesheet" href="/static/style.css?v=22">
     <style>
-        .template-card {
+        .skill-card {
             border: 1px solid #dee2e6;
             border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 10px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: all 0.2s;
+            background: white;
+        }
+        .skill-card:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .skill-header {
+            font-weight: 600;
+            font-size: 1.05rem;
+            margin-bottom: 12px;
+            color: #212529;
+        }
+        .level-option {
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 10px 12px;
+            margin-bottom: 8px;
             cursor: pointer;
             transition: all 0.2s;
+            background: #fafafa;
         }
-        .template-card:hover {
-            background-color: #f8f9fa;
-            border-color: #0d6efd;
+        .level-option:hover {
+            background-color: #f0f0f0;
+            border-color: #999;
         }
-        .template-card.selected {
+        .level-option.selected {
             background-color: #e7f1ff;
             border-color: #0d6efd;
             border-width: 2px;
         }
-        .level-badge {
-            font-size: 0.75rem;
-            padding: 3px 8px;
+        .level-number {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            line-height: 28px;
+            text-align: center;
+            border-radius: 50%;
+            background: #6c757d;
+            color: white;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-right: 10px;
         }
-        .category-section {
-            margin-bottom: 20px;
+        .level-option.selected .level-number {
+            background: #0d6efd;
+        }
+        .level-description {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-top: 4px;
+        }
+        .source-badge {
+            font-size: 0.7rem;
+            padding: 2px 6px;
         }
         .selected-count {
             background-color: #0d6efd;
@@ -196,7 +232,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/static/app.js?v=29"></script>
+    <script src="/static/app.js?v=37"></script>
     <script>
         let createdIdpId = null;
         let selectedTemplates = new Set();
@@ -342,42 +378,79 @@
             }
         }
         
-        // Отрисовка шаблонов
+        // Отрисовка шаблонов (с группировкой по навыкам)
         function renderTemplates(templates, container) {
             container.innerHTML = '';
             
+            // Группируем шаблоны по skill_name
+            const skillGroups = {};
             templates.forEach(t => {
-                const card = document.createElement('div');
-                card.className = `template-card ${selectedTemplates.has(t.id) ? 'selected' : ''}`;
-                card.dataset.templateId = t.id;
-                card.dataset.skillName = (t.skill_name || '').toLowerCase();
-                card.onclick = () => toggleTemplate(t.id);
+                const key = t.skill_name;
+                if (!skillGroups[key]) {
+                    skillGroups[key] = [];
+                }
+                skillGroups[key].push(t);
+            });
+            
+            // Отрисовываем каждую группу навыков
+            Object.keys(skillGroups).sort().forEach(skillName => {
+                const skillTemplates = skillGroups[skillName];
                 
-                card.innerHTML = `
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div class="flex-grow-1">
-                            <h6 class="mb-1">
-                                ${t.skill_name}
-                                ${t.level ? `<span class="badge level-badge bg-info">Уровень ${t.level}</span>` : ''}
-                                <span class="badge bg-secondary level-badge">${t.source === 'kb_tasks' ? 'БЗ' : 'Hard Skills'}</span>
-                            </h6>
-                            <p class="mb-1 text-muted small">${t.goal || 'Нет описания цели'}</p>
-                            ${t.duration_weeks ? `<small class="text-muted">⏱ ${t.duration_weeks} недель</small>` : ''}
-                        </div>
-                        <div>
-                            <input type="checkbox" class="form-check-input" 
-                                   ${selectedTemplates.has(t.id) ? 'checked' : ''} 
-                                   onclick="event.stopPropagation()">
-                        </div>
+                // Сортируем по уровню
+                skillTemplates.sort((a, b) => (a.level || 0) - (b.level || 0));
+                
+                const card = document.createElement('div');
+                card.className = 'skill-card';
+                card.dataset.skillName = skillName.toLowerCase();
+                
+                // Заголовок навыка
+                const source = skillTemplates[0].source === 'kb_tasks' ? 'БЗ' : 'Hard Skills';
+                let headerHtml = `
+                    <div class="skill-header">
+                        ${skillName}
+                        <span class="badge bg-secondary source-badge ms-2">${source}</span>
                     </div>
-                    ${t.description ? `
-                        <details class="mt-2">
-                            <summary class="small text-primary" style="cursor: pointer;">Подробнее</summary>
-                            <p class="small mt-2 mb-0">${t.description.substring(0, 300)}${t.description.length > 300 ? '...' : ''}</p>
-                        </details>
-                    ` : ''}
                 `;
                 
+                // Уровни навыка
+                let levelsHtml = '<div class="levels-container">';
+                
+                skillTemplates.forEach(t => {
+                    const isSelected = selectedTemplates.has(t.id);
+                    const levelNum = t.level || 1;
+                    
+                    levelsHtml += `
+                        <div class="level-option ${isSelected ? 'selected' : ''}" 
+                             data-template-id="${t.id}"
+                             onclick="toggleTemplate(${t.id}, event)">
+                            <div class="d-flex align-items-start">
+                                <span class="level-number">${levelNum}</span>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <strong>Уровень ${levelNum}</strong>
+                                            ${t.duration_weeks ? `<span class="text-muted ms-2">⏱ ${t.duration_weeks} нед.</span>` : ''}
+                                        </div>
+                                        <input type="checkbox" class="form-check-input" 
+                                               ${isSelected ? 'checked' : ''} 
+                                               onclick="event.stopPropagation()">
+                                    </div>
+                                    ${t.goal ? `<div class="level-description">${t.goal}</div>` : ''}
+                                    ${t.description ? `
+                                        <details class="mt-1">
+                                            <summary class="small text-primary" style="cursor: pointer;">Подробнее</summary>
+                                            <p class="small mt-1 mb-0 text-muted">${t.description.substring(0, 200)}${t.description.length > 200 ? '...' : ''}</p>
+                                        </details>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                levelsHtml += '</div>';
+                
+                card.innerHTML = headerHtml + levelsHtml;
                 container.appendChild(card);
             });
         }
@@ -390,7 +463,7 @@
             
             if (!query) {
                 // Показываем все карточки и секции
-                const allCards = document.querySelectorAll('.template-card');
+                const allCards = document.querySelectorAll('.skill-card');
                 allCards.forEach(card => {
                     card.style.display = '';
                 });
@@ -418,8 +491,8 @@
             }
             
             // Теперь фильтруем
-            const allCards = document.querySelectorAll('.template-card');
-            console.log('[ПОИСК] Всего карточек:', allCards.length);
+            const allCards = document.querySelectorAll('.skill-card');
+            console.log('[ПОИСК] Всего карточек навыков:', allCards.length);
             
             // Открываем все секции аккордеона
             const allCollapse = document.querySelectorAll('.accordion-collapse');
@@ -429,10 +502,10 @@
             
             let found = 0;
             
-            // Фильтруем карточки - ищем по видимому тексту названия
+            // Фильтруем карточки - ищем по названию навыка
             allCards.forEach(card => {
-                const h6Element = card.querySelector('h6');
-                const titleText = h6Element ? h6Element.textContent.toLowerCase() : '';
+                const skillHeader = card.querySelector('.skill-header');
+                const titleText = skillHeader ? skillHeader.textContent.toLowerCase() : '';
                 const dataSkillName = card.dataset.skillName || '';
                 
                 const matches = titleText.includes(query) || dataSkillName.includes(query);
@@ -449,7 +522,7 @@
             const allAccordionItems = document.querySelectorAll('.accordion-item');
             allAccordionItems.forEach(item => {
                 const accordionBody = item.querySelector('.accordion-body');
-                const visibleCards = accordionBody.querySelectorAll('.template-card:not([style*="display: none"])');
+                const visibleCards = accordionBody.querySelectorAll('.skill-card:not([style*="display: none"])');
                 
                 if (visibleCards.length === 0) {
                     item.style.display = 'none';
@@ -458,7 +531,7 @@
                 }
             });
             
-            console.log('[ПОИСК] Показано карточек:', found);
+            console.log('[ПОИСК] Показано навыков:', found);
         }
         
         // Очистка поиска
@@ -468,18 +541,23 @@
         }
 
         // Переключение выбора шаблона
-        function toggleTemplate(templateId) {
+        function toggleTemplate(templateId, event) {
             if (selectedTemplates.has(templateId)) {
                 selectedTemplates.delete(templateId);
             } else {
                 selectedTemplates.add(templateId);
             }
             updateSelectedCount();
+            
             // Обновляем визуально
-            const card = event.currentTarget;
-            card.classList.toggle('selected');
-            const checkbox = card.querySelector('input[type="checkbox"]');
-            checkbox.checked = selectedTemplates.has(templateId);
+            const levelOption = event ? event.currentTarget : document.querySelector(`[data-template-id="${templateId}"]`);
+            if (levelOption) {
+                levelOption.classList.toggle('selected', selectedTemplates.has(templateId));
+                const checkbox = levelOption.querySelector('input[type="checkbox"]');
+                if (checkbox) {
+                    checkbox.checked = selectedTemplates.has(templateId);
+                }
+            }
         }
 
         // Обновление счетчика выбранных

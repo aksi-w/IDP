@@ -59,6 +59,7 @@ class Task(Base):
     priority = Column(String, nullable=True)
     deadline = Column(DateTime, nullable=True)
     linked_skills = Column(JSON, nullable=True)
+    checklist_state = Column(JSON, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     
     idp = relationship("IDP", back_populates="tasks")

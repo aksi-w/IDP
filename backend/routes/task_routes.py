@@ -53,6 +53,8 @@ def get_tasks_by_idp(
             detail="Нет доступа к этому ИПР"
         )
     
+    # Просто возвращаем задачи без сортировки
+    # Вся сортировка на фронтенде
     tasks = db.query(Task).filter(Task.idp_id == idp_id).all()
     return [TaskResponse.from_orm(task) for task in tasks]
 

@@ -44,6 +44,7 @@ class TaskBase(BaseModel):
     priority: Optional[str] = None
     deadline: Optional[datetime] = None
     linked_skills: Optional[dict] = None
+    checklist_state: Optional[dict] = None
 
 class TaskCreate(TaskBase):
     idp_id: int
@@ -55,6 +56,7 @@ class TaskUpdate(BaseModel):
     priority: Optional[str] = None
     deadline: Optional[datetime] = None
     linked_skills: Optional[dict] = None
+    checklist_state: Optional[dict] = None
 
 class TaskResponse(TaskBase):
     id: int
